@@ -1,0 +1,323 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* === 1. Variabel Global & Reset === */
+:root {
+    --dark-bg: #030f27;
+    --light-blue-accent: #00bfff;
+    --text-primary: #ffffff;
+    --text-secondary: #e6f1ff;
+    
+    /* Ini adalah kunci untuk efek kaca buram (frosted glass) */
+    --card-bg: rgba(168, 163, 163, 0.05);;
+    --card-border: rgba(255, 255, 255, 0.2);
+    
+    --container-width: 1140px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-secondary);
+    line-height: 1.6;
+        /* Ini akan memuat gambar mobil Anda dengan overlay gelap */
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--dark-bg), transparent 20%) 0%, color-mix(in srgb, var(--dark-bg), transparent 10%) 100%),
+                      url("/static/images/bg1.jpg"); 
+                      
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Efek parallax sederhana */
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+}
+
+/* === 2. Navbar === */
+.navbar {
+    /* Ini adalah efek transparan buram untuk navbar */
+ background: transparent; 
+    padding: 1.2rem 0;
+    position: fixed; /* Mengambang di atas */
+    width: 100%; /* Wajib jika menggunakan fixed */
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease; /* Efek transisi halus */
+    border-bottom: 1px solid transparent;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.main-nav ul {
+    display: flex;
+    list-style: none;
+}
+
+.main-nav li {
+    margin-left: 2.5rem;
+}
+
+.main-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.main-nav a:hover {
+    color: var(--light-blue-accent);
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center;
+}
+/* Di dalam file dashboard-style.css */
+
+.nav-link {
+   color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative; /* Wajib untuk garis bawah */
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+    padding-bottom: 20px;
+    
+}
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* 1. KITA BUAT GARISNYA DI SINI (SELALU ADA, TAPI TERSEMBUNYI) */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    width: 25px; /* Lebar garis yang diinginkan */
+    height: 3px;
+    background-color: var(--light-blue-accent);
+    border-radius: 2px;
+    
+    /* 2. Sembunyikan garisnya (lebar 0%) */
+    transform: scaleX(0);
+    transform-origin: left; /* Mulai tumbuh dari kiri */
+    
+    /* 3. INI KUNCINYA: Animasikan perubahan 'transform' */
+    transition: transform 0.3s ease-out;
+}
+
+/* 4. MUNCULKAN GARISNYA SAAT DI-HOVER / ACTIVE */
+.nav-link:hover::after,
+.nav-link.active::after {
+    transform: scaleX(1); /* Tampilkan garis (lebar 100%) */
+}
+
+.user-profile-group {
+    display: flex;
+    align-items: center;
+    margin-right: 1.5rem;
+}
+
+.user-profile-group .user-icon {
+    color: var(--light-blue-accent);
+    font-size: 1.1rem;
+}
+
+.user-profile-group .user-display-name {
+    margin-left: 10px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.logout-link {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+.logout-link:hover {
+    color: #ff4d4d; /* Warna merah saat hover logout */
+}
+
+
+/* === 3. Hero Section (Bagian Utama) === */
+.hero-section {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    padding: 9rem 0 4rem 0;
+}
+
+.hero-section .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+}
+
+/* === 4. Konten Hero (Kiri) === */
+.hero-content .hero-tag {
+    display: inline-block;
+    background-color: var(--light-blue-accent);
+    color: var(--dark-bg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+.hero-content h1 {
+    font-size: 3.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* === 5. Tombol (Reusable) === */
+.btn {
+    display: inline-block;
+    padding: 0.9rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var(--light-blue-accent);
+    color: var(--dark-bg);
+    font-weight: 700;
+}
+
+.btn-primary:hover {
+    background-color: #0099e0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 191, 255, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.btn-secondary:hover {
+    background-color: var(--light-blue-accent);
+    border-color: var(--light-blue-accent);
+    color: var(--dark-bg);
+    transform: translateY(-2px);
+}
+
+.btn-secondary i {
+    margin-right: 0.5rem;
+}
+
+/* === 6. Kotak Fitur (Kanan) - KACA BURAM === */
+.feature-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.feature-box {
+    /* Ini adalah efek KACA BURAM (FROSTED GLASS) */
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+
+.feature-box i {
+    font-size: 2rem;
+    color: var(--light-blue-accent);
+    margin-bottom: 1rem;
+}
+
+.feature-box h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* === 7. Responsif (Tampilan Mobile) === */
+@media (max-width: 992px) {
+    .hero-section .container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-content p {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+    
+    .main-nav {
+        display: none; /* Sembunyikan nav utama (butuh menu hamburger) */
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .feature-boxes {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+    }
+}

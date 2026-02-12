@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Riwayat Prediksi - PreGaMo{% endblock title %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/history.css' %}">
+{% endblock styles %}
+
+{% block content %}
+
+<main class="history-content">
+    
+    <div class="history-container">
+        
+        <div class="history-header">
+            <h1>Riwayat Prediksi</h1>
+            <p>Daftar semua kalkulasi harga mobil yang pernah Anda lakukan.</p>
+        </div>
+
+        {% if riwayat %}
+        <!-- Filter & Sort Controls -->
+        <div class="controls-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Filter Brand:</label>
+                <select id="filterBrand" class="control-select">
+                    <option value="all">Semua Brand</option>
+                    <option value="toyota">Toyota</option>
+                    <option value="honda">Honda</option>
+                    <option value="mitsubishi">Mitsubishi</option>
+                    <option value="daihatsu">Daihatsu</option>
+                    <option value="suzuki">Suzuki</option>
+                </select>
+            </div>
+            <div class="sort-group">
+                <label><i class="fas fa-sort"></i> Urutkan:</label>
+                <select id="sortBy" class="control-select">
+                    <option value="date-desc">Terbaru</option>
+                    <option value="date-asc">Terlama</option>
+                    <option value="price-desc">Harga Tertinggi</option>
+                    <option value="price-asc">Harga Terendah</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- History Cards -->
+        <div class="history-cards" id="historyList">
+            {% for item in riwayat %}
+            <div class="history-card-item" data-brand="{{ item.brand|lower }}" data-price="{{ item.predicted_price }}" data-date="{{ item.created_at|date:'Y-m-d' }}">
+                <div class="card-date">
+                    <span class="date-day">{{ item.created_at|date:"d" }}</span>
+                    <span class="date-month">{{ item.created_at|date:"M" }}</span>
+                </div>
+                <div class="card-details">
+                    <h3 class="car-name">{{ item.brand|title }} {{ item.model_name }}</h3>
+                    <div class="car-specs">
+                        <span class="spec-badge">{{ item.year }}</span>
+                        <span class="spec-badge">{{ item.transmission }}</span>
+                        <span class="spec-badge">{{ item.fuel }}</span>
+                    </div>
+                    <div class="car-info">
+                        <i class="fas fa-road"></i> {{ item.mileage|floatformat:0 }} km
+                        <i class="fas fa-tachometer-alt" style="margin-left: 1rem;"></i> {{ item.engine_cc }} cc
+                    </div>
+                </div>
+                <div class="card-price">
+                    <span class="price-label">Estimasi</span>
+                    <span class="price-value">Rp {{ item.predicted_price|floatformat:0|intcomma }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="history-card">
+            <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <h3 style="color: var(--text-primary);">Belum ada riwayat</h3>
+                <p style="color: var(--text-secondary);">Anda belum melakukan prediksi apapun saat ini.</p>
+                <a href="{% url 'predict_page' %}" class="btn-predict">
+                    Mulai Prediksi Sekarang
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</main>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter & Sort Functionality
+const filterBrand = document.getElementById('filterBrand');
+const sortBy = document.getElementById('sortBy');
+const historyList = document.getElementById('historyList');
+
+if (filterBrand && sortBy && historyList) {
+    function updateDisplay() {
+        const cards = Array.from(historyList.querySelectorAll('.history-card-item'));
+        const brandFilter = filterBrand.value;
+        const sortOption = sortBy.value;
+        
+        // Filter
+        cards.forEach(card => {
+            const cardBrand = card.dataset.brand;
+            if (brandFilter === 'all' || cardBrand === brandFilter) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Sort
+        const visibleCards = cards.filter(card => card.style.display !== 'none');
+        visibleCards.sort((a, b) => {
+            if (sortOption === 'date-desc') {
+                return new Date(b.dataset.date) - new Date(a.dataset.date);
+            } else if (sortOption === 'date-asc') {
+                return new Date(a.dataset.date) - new Date(b.dataset.date);
+            } else if (sortOption === 'price-desc') {
+                return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+            } else if (sortOption === 'price-asc') {
+                return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+            }
+        });
+        
+        // Re-append sorted cards
+        visibleCards.forEach(card => historyList.appendChild(card));
+    }
+    
+    filterBrand.addEventListener('change', updateDisplay);
+    sortBy.addEventListener('change', updateDisplay);
+}
+</script>
+{% endblock %}

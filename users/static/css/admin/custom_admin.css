@@ -1,0 +1,349 @@
+/* ============================================
+   CUSTOM ADMIN STYLING - TEMA TERANG & RAPI
+   ============================================ */
+
+/* --- SIDEBAR STYLING --- */
+.main-sidebar {
+    background-color: #ffffff !important;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.1) !important;
+}
+
+/* Sidebar Brand - Judul di atas */
+.brand-link {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    padding: 1rem 0.5rem !important;
+}
+
+.brand-text {
+    color: #212529 !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+}
+
+/* Sidebar Menu Items */
+.nav-sidebar .nav-link {
+    color: #495057 !important;
+    font-weight: 500 !important;
+    padding: 0.7rem 1rem !important;
+    margin: 0.15rem 0.5rem !important;
+    border-radius: 0.35rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Hover effect untuk menu */
+.nav-sidebar .nav-link:hover {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+}
+
+/* Active menu item */
+.nav-sidebar .nav-link.active {
+    background-color: #007bff !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
+}
+
+/* Icons di sidebar */
+.nav-icon {
+    color: #6c757d !important;
+    font-size: 1rem !important;
+    width: 1.6rem !important;
+}
+
+.nav-link.active .nav-icon {
+    color: #ffffff !important;
+}
+
+/* Nav Treeview (submenu) */
+.nav-treeview .nav-link {
+    padding-left: 2.5rem !important;
+    font-size: 0.9rem !important;
+}
+
+/* Nav Header (section titles) */
+.nav-header {
+    color: #212529 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.5px !important;
+    padding: 1rem 1rem 0.5rem 1rem !important;
+}
+
+/* --- NAVBAR (TOP BAR) STYLING --- */
+.main-header.navbar {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+}
+
+.navbar-nav .nav-link {
+    color: #495057 !important;
+    font-weight: 500 !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff !important;
+}
+
+/* --- CONTENT AREA --- */
+.content-wrapper {
+    background-color: #f4f6f9 !important;
+}
+
+/* Card styling */
+.card {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+.card-header {
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    font-weight: 600 !important;
+    color: #212529 !important;
+}
+
+/* --- BUTTON STYLING --- */
+.btn {
+    font-weight: 500 !important;
+    border-radius: 0.35rem !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3 !important;
+    border-color: #0056b3 !important;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+}
+
+.btn-success {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.btn-success:hover {
+    background-color: #218838 !important;
+    border-color: #218838 !important;
+    box-shadow: 0 4px 8px rgba(40,167,69,0.3) !important;
+}
+
+.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #ffffff !important;
+}
+
+.btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #c82333 !important;
+    box-shadow: 0 4px 8px rgba(220,53,69,0.3) !important;
+}
+
+.btn-info {
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
+    color: #ffffff !important;
+}
+
+.btn-warning {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+/* Add button (tombol tambah data) */
+.btn-success.addlink,
+.object-tools a.addlink {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* --- TABLE STYLING --- */
+.table {
+    background-color: #ffffff !important;
+}
+
+.table thead th {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    font-weight: 600 !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* --- TEXT CONTRAST --- */
+body,
+.content-wrapper,
+.main-sidebar,
+.card-body {
+    color: #212529 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #212529 !important;
+    font-weight: 600 !important;
+}
+
+/* Labels dan text di form */
+label,
+.form-label {
+    color: #212529 !important;
+    font-weight: 500 !important;
+}
+
+/* Input fields */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    border: 1px solid #ced4da !important;
+    background-color: #ffffff !important;
+    color: #212529 !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25) !important;
+}
+
+/* --- BREADCRUMB --- */
+.breadcrumb {
+    background-color: transparent !important;
+}
+
+.breadcrumb-item,
+.breadcrumb-item a {
+    color: #495057 !important;
+    font-weight: 500 !important;
+}
+
+.breadcrumb-item.active {
+    color: #212529 !important;
+}
+
+/* --- SEARCH BOX --- */
+.sidebar-form input {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important;
+}
+
+/* --- PAGINATION --- */
+.pagination .page-link {
+    color: #007bff !important;
+    font-weight: 500 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+    color: #ffffff !important;
+}
+
+/* --- ALERTS --- */
+.alert {
+    border-radius: 0.35rem !important;
+    font-weight: 500 !important;
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    border-color: #c3e6cb !important;
+    color: #155724 !important;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    color: #721c24 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    border-color: #bee5eb !important;
+    color: #0c5460 !important;
+}
+
+/* --- USER PANEL --- */
+.user-panel {
+    border-bottom: 1px solid #dee2e6 !important;
+    padding: 1rem !important;
+}
+
+.user-panel .info {
+    color: #212529 !important;
+    font-weight: 600 !important;
+}
+
+/* --- DROPDOWN MENU --- */
+.dropdown-menu {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+.dropdown-item {
+    color: #495057 !important;
+    font-weight: 500 !important;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+/* --- RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .brand-text {
+        font-size: 0.9rem !important;
+    }
+    
+    .nav-sidebar .nav-link {
+        font-size: 0.9rem !important;
+        padding: 0.6rem 0.8rem !important;
+    }
+}
+
+/* --- HIDE NAVBAR SEARCH BOXES --- */
+/* Hide all search boxes in the top navbar/header area */
+.main-header .navbar form[role="search"],
+.main-header .navbar .app-search,
+.main-header form,
+#searchbar,
+#toolbar form[action*="autocomplete"],
+nav[aria-label="Breadcrumbs"] ~ form,
+.navbar form[method="get"]:has(input[type="search"]),
+header form[method="get"]:has(input[type="search"]) {
+    display: none !important;
+}
+
+/* Alternative: Hide any navbar/header search input directly */
+.main-header input[type="search"],
+header input[type="search"],
+nav input[type="search"] {
+    display: none !important;
+}
+
+/* Hide parent form if it only contains search input */
+.main-header form:has(input[type="search"]),
+header form:has(input[type="search"]) {
+    display: none !important;
+}

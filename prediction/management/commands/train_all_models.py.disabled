@@ -1,0 +1,120 @@
+# prediction/management/commands/train_all_models.py
+"""
+Django management command untuk manual training semua models.
+Usage: python manage.py train_all_models [--async]
+"""
+
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+from prediction.models import Brand, FileDataset
+
+
+class Command(BaseCommand):
+    help = 'Train atau retrain semua models untuk semua brand'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--async',
+            action='store_true',
+            help='Run training asynchronously menggunakan Celery',
+        )
+        parser.add_argument(
+            '--brand',
+            type=str,
+            help='Train hanya untuk brand tertentu (opsional)',
+        )
+
+    def handle(self, *args, **options):
+        use_async = options['async']
+        brand_filter = options.get('brand')
+        
+        self.stdout.write(self.style.SUCCESS('=' * 70))
+        self.stdout.write(self.style.SUCCESS('🤖 AUTONOMOUS TRAINING SYSTEM'))
+        self.stdout.write(self.style.SUCCESS('=' * 70))
+        
+        # Filter brands
+        if brand_filter:
+            brands = Brand.objects.filter(name__icontains=brand_filter)
+            if not brands.exists():
+                self.stdout.write(self.style.ERROR(f'❌ Brand "{brand_filter}" tidak ditemukan!'))
+                return
+        else:
+            brands = Brand.objects.all()
+        
+        self.stdout.write(f'\n📊 Total brands: {brands.count()}\n')
+        
+        trained_count = 0
+        skipped_count = 0
+        failed_count = 0
+        
+        for brand in brands:
+            self.stdout.write(f'\n📦 Processing: {brand.name}')
+            
+            # Cari dataset terbaru
+            dataset = FileDataset.objects.filter(brand=brand).order_by('-uploaded_at').first()
+            
+            if not dataset:
+                self.stdout.write(self.style.WARNING(f'   ⚠️  Tidak ada dataset, skip.'))
+                skipped_count += 1
+                continue
+            
+            self.stdout.write(f'   📄 Dataset: {dataset.file_excel.name}')
+            self.stdout.write(f'   📅 Upload: {dataset.uploaded_at.strftime("%Y-%m-%d %H:%M")}')
+            
+            # Training
+            if use_async:
+                # Async training dengan Celery
+                try:
+                    from prediction.tasks import train_model_async
+                    
+                    task = train_model_async.delay(
+                        file_dataset_id=dataset.id,
+                        user_id=None
+                    )
+                    
+                    self.stdout.write(self.style.SUCCESS(f'   ✅ Training dijadwalkan (Task ID: {task.id})'))
+                    trained_count += 1
+                    
+                except ImportError:
+                    self.stdout.write(self.style.ERROR('   ❌ Celery tidak tersedia! Gunakan tanpa --async'))
+                    failed_count += 1
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f'   ❌ Error: {str(e)}'))
+                    failed_count += 1
+            else:
+                # Synchronous training
+                try:
+                    from prediction.training_linear import train_from_file
+                    
+                    self.stdout.write('   🔄 Training dimulai...')
+                    result = train_from_file(dataset.id)
+                    
+                    if result['success']:
+                        metrics = result['metrics']
+                        self.stdout.write(self.style.SUCCESS(f'   ✅ Training berhasil!'))
+                        self.stdout.write(f'      RMSE: Rp {metrics["rmse"]:,.0f}')
+                        self.stdout.write(f'      R² Score: {metrics["r2_score"]:.4f} ({metrics["accuracy_percentage"]:.2f}%)')
+                        self.stdout.write(f'      Waktu: {result["training_time"]:.2f} detik')
+                        trained_count += 1
+                    else:
+                        self.stdout.write(self.style.ERROR(f'   ❌ Training gagal: {result["message"]}'))
+                        failed_count += 1
+                        
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f'   ❌ Error: {str(e)}'))
+                    failed_count += 1
+        
+        # Summary
+        self.stdout.write('\n' + '=' * 70)
+        self.stdout.write(self.style.SUCCESS('📈 SUMMARY'))
+        self.stdout.write('=' * 70)
+        self.stdout.write(f'✅ Trained: {trained_count}')
+        self.stdout.write(f'⚠️  Skipped: {skipped_count}')
+        self.stdout.write(f'❌ Failed: {failed_count}')
+        self.stdout.write('=' * 70 + '\n')
+        
+        if use_async and trained_count > 0:
+            self.stdout.write(self.style.SUCCESS(
+                '💡 Tip: Monitor progress di Admin → Training History atau gunakan:\n'
+                '   celery -A config inspect active\n'
+            ))

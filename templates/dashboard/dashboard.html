@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - PreGaMo{% endblock title %}
+
+<!-- Bagian Awal Content Dashboard Prediksi-->
+{% block content %} 
+ <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-tag">PREDIKSI HARGA MOBIL</span>
+                <h1>Temukan Harga Akurat Mobil Impian Anda</h1>
+                <p>Manfaatkan teknologi canggih kami untuk mendapatkan estimasi harga mobil bekas yang akurat dan terpercaya dalam hitungan detik.</p>
+
+            </div>
+            <div class="feature-boxes">
+                <div class="feature-box">
+                    <i class="fas fa-car"></i>
+                    <h3>{{ total_mobil }} Total Mobil</h3>
+                </div>
+                <div class="feature-box">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <h3>{{ total_brand }} Total Brand</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}
+<!-- Bagian Akhir Content Dashboard Prediksi-->
+

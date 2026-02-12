@@ -1,0 +1,74 @@
+ {% load static %}
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PreGaMo{% endblock title %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    {% block styles %}{% endblock styles %}
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container">
+            <a href="" class="logo">PreGaMo</a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'dashboard' %}" class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{% url 'predict_page' %}" class="nav-link {% if request.path == '/predict/' %}active{% endif %}">Predict</a></li>
+                    <li><a href="{% url 'predict_history' %}" class="nav-link {% if request.path == '/history/' %}active{% endif %}">Riwayat Prediksi</a></li>
+                    <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
+                </ul>
+            </nav>
+            <div class="nav-icons">
+              <div class="user-profile-group">
+        
+        <i class="fas fa-user user-icon"></i>
+        
+        <span class="user-display-name">
+            {% if user.first_name %}
+                {{ user.first_name }}
+            {% else %}
+                {{ user.email }}
+            {% endif %}
+        </span>
+    </div>
+            </div>
+        </div>
+    </header>
+
+    {% block content %}
+    {% endblock content %}
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Active nav link highlighting
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock scripts %}
+</body>
+
+</html>

@@ -1,0 +1,570 @@
+:root {
+    --primary-bg: #f8fafc;
+    --secondary-bg: #ffffff;
+    --accent-blue: #3b82f6;
+    --accent-blue-dark: #2563eb;
+    --text-primary: #000000;
+    --text-secondary: #1f2937;
+    --text-muted: #4b5563;
+    
+    --card-bg: #ffffff;
+    --card-border: #000000;
+    --light-blue-accent: var(--accent-blue);
+    --dark-bg: var(--primary-bg);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+/* predict.css - Matching dengan Dashboard Aventro */
+
+/* Hapus reset body/root karena sudah dihandle base.html */
+
+.main-content {
+    padding: 2rem 5%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 80px);
+    padding-top: 120px;
+}
+
+.prediction-container {
+    width: 100%;
+    max-width: 1000px;
+}
+
+.prediction-container h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* === FORM CONTAINER (Gaya Glass + Gradien Kilau) === */
+.form-step {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.form-step.active {
+    display: block; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-step h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+/* === GRID PILIHAN (Merek & Model) === */
+.brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.2rem;
+}
+
+.model-group {
+    display: none; 
+    grid-template-columns: repeat(auto-fit, minmax(110px , 1fr));
+    gap: 1.2rem;
+    width: 100%;
+    justify-content: center; 
+}
+
+/* Kotak Item (Card Kecil) */
+.brand-box, .model-box { 
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.brand-box { height: 120px; }
+.model-box { height: 130px; } 
+
+/* Hover State */
+.brand-box:hover, .model-box:hover { 
+    border-color: var(--accent-blue);
+    background: #eff6ff;
+    transform: translateY(-2px);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.brand-box img { 
+    max-height: 50px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0.9); /* Sedikit redup agar menyatu */
+    transition: filter 0.3s;
+}
+.brand-box:hover img { filter: brightness(1.2); } /* Terang saat hover */
+
+/* --- STYLE IKON MOBIL (UNIFORM & THIN LOOK) --- */
+
+.model-box i { 
+    font-size: 2rem; 
+    margin-bottom: 0.5rem; 
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.model-box:hover i, 
+.model-box.selected i { 
+    color: var(--accent-blue);
+    transform: scale(1.1);
+}
+
+.model-box span { 
+    font-weight: 500; 
+    font-size: 0.9rem; 
+    text-align: center; 
+}
+
+/* Active/Selected State */
+.brand-box.selected, .model-box.selected {
+    border-color: var(--accent-blue);
+    background: #dbeafe;
+    color: var(--text-primary);
+    box-shadow: 0 0 0 2px var(--accent-blue);
+    transform: scale(1.02);
+}
+.model-box.selected svg { stroke: var(--light-blue-accent); }
+
+/* --- FORM INPUTS (Langkah Terakhir) --- */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 Kolom agar lebih rapi */
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-group label { 
+    margin-bottom: 0.6rem; 
+    font-weight: 500; 
+    color: var(--text-secondary); 
+    font-size: 0.95rem; 
+    display: block;
+}
+
+.form-group input, .form-group select { 
+    background-color: white;
+    border: 1px solid var(--card-border);
+    border-radius: 8px; 
+    padding: 0.8rem 1rem; 
+    font-size: 1rem; 
+    width: 100%;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+/* Focus State (Saat diklik) */
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* --- NAVIGASI TOMBOL --- */
+.form-navigation { 
+    display: flex; 
+    justify-content: space-between;
+    margin-top: 2rem; 
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.nav-btn { 
+    padding: 0.9rem 2.5rem; 
+    font-size: 1rem; 
+    font-weight: 600; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prev-btn { 
+    background: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+}
+.prev-btn:hover {
+    border-color: var(--text-primary);
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.05);
+}
+
+.submit-btn { 
+    background: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+    color: white;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+    background: var(--accent-blue-dark);
+    border-color: var(--accent-blue-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+
+/* --- LAYOUT STEP 3 (Ringkasan + Form) --- */
+.final-step-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Ringkasan kecil, Form besar */
+    gap: 2rem;
+    align-items: start;
+}
+
+/* Kartu Ringkasan di Kiri */
+.selection-summary {
+    background: rgba(0,0,0,0.2);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    text-align: center;
+}
+
+.summary-box img {
+    width: 100%;
+    max-width: 200px;
+    margin: 1.5rem 0;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+}
+
+.summary-box h4 {
+    color: var(--light-blue-accent);
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- MODAL HASIL --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border: 2px solid #000000;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlide 0.4s ease-out;
+}
+
+/* Custom scrollbar untuk modal */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0 16px 16px 0;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #2563eb;
+}
+
+@keyframes modalSlide {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9) translateY(-20px);
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    padding: 1.25rem 2rem;
+    text-align: center;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.icon-success {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.icon-success i {
+    font-size: 1.6rem;
+    color: white;
+}
+
+.modal-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    color: white;
+}
+
+.modal-body {
+    padding: 1.75rem 2rem;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.predicted-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000000;
+    margin: 0;
+    padding: 1.25rem 0.75rem;
+    background: #f0f9ff;
+    border-radius: 10px;
+    border: 2px solid #3b82f6;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.conclusion-box {
+    background: #f8fafc;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: left;
+}
+
+.conclusion-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.conclusion-header i {
+    font-size: 1.1rem;
+    color: #3b82f6;
+}
+
+.conclusion-header h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+}
+
+.conclusion-text {
+    font-size: 0.85rem;
+    color: #1f2937;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.modal-footer {
+    padding: 1.25rem 2rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.btn-selesai {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-selesai:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-selesai:active {
+    transform: translateY(0);
+}
+
+.btn-selesai i {
+    font-size: 1.1rem;
+}
+
+/* Highlight text dalam conclusion */
+.highlight-text {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .final-step-container {
+        grid-template-columns: 1fr; /* Tumpuk vertikal di HP */
+    }
+    .details-grid {
+        grid-template-columns: 1fr; /* 1 kolom input di HP */
+    }
+    .form-step { padding: 1.5rem; }
+    
+    /* Modal Responsive */
+    .modal-body {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+    
+    .predicted-price {
+        font-size: 1.8rem;
+        padding: 1rem;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .conclusion-text {
+        font-size: 0.8rem;
+    }
+}
+/* === STYLE STEP 3: SIDE-BY-SIDE (BERDAMPINGAN) === */
+
+/* Wrapper utama untuk mensejajarkan Transmisi & Fuel */
+.specs-wrapper {
+    display: flex;
+    gap: 2rem; /* Jarak antara kolom kiri dan kanan */
+    width: 100%;
+}
+
+/* Setiap kolom mengambil ruang 50:50 */
+.spec-section {
+    flex: 1; 
+}
+
+/* Grid tombol di dalam setiap kolom (2 tombol per baris) */
+.spec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 1rem;
+}
+
+/* Style Kotak Pilihan (Sama seperti sebelumnya) */
+.spec-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.5rem; /* Sedikit dikecilkan paddingnya agar muat */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    height: 100%; /* Agar tinggi seragam */
+    min-height: 120px;
+}
+
+.spec-box i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.spec-box span {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Hover & Selected State */
+.spec-box:hover, .spec-box.selected {
+    border-color: var(--light-blue-accent);
+    background: rgba(0, 191, 255, 0.15);
+    color: var(--text-primary);
+    box-shadow: 0 5px 15px rgba(0, 191, 255, 0.15);
+    transform: translateY(-3px);
+}
+
+.spec-box:hover i, .spec-box.selected i {
+    -webkit-text-stroke: 1.5px var(--light-blue-accent);
+    color: rgba(0, 191, 255, 0.1);
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.6));
+}
+
+/* --- RESPONSIF (Untuk HP) --- */
+@media (max-width: 768px) {
+    /* Di layar kecil, kembali ditumpuk atas-bawah agar tidak sempit */
+    .specs-wrapper {
+        flex-direction: column;
+        gap: 2rem;
+    }
+}

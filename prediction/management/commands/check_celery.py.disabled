@@ -1,0 +1,142 @@
+# prediction/management/commands/check_celery.py
+"""
+Django management command untuk check Celery status dan tasks.
+Usage: python manage.py check_celery
+"""
+
+from django.core.management.base import BaseCommand
+from celery import Celery
+import sys
+
+
+class Command(BaseCommand):
+    help = 'Check Celery worker dan task status'
+
+    def handle(self, *args, **options):
+        self.stdout.write(self.style.SUCCESS('=' * 70))
+        self.stdout.write(self.style.SUCCESS('🔍 CELERY STATUS CHECK'))
+        self.stdout.write(self.style.SUCCESS('=' * 70))
+        
+        try:
+            from config.celery import app
+            
+            # Check broker connection
+            self.stdout.write('\n📡 Checking Broker Connection...')
+            try:
+                conn = app.connection()
+                conn.ensure_connection(max_retries=3)
+                self.stdout.write(self.style.SUCCESS('   ✅ Broker connected'))
+                conn.release()
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'   ❌ Broker connection failed: {e}'))
+                self.stdout.write(self.style.WARNING('   💡 Pastikan Redis running: redis-server'))
+                return
+            
+            # Check active workers
+            self.stdout.write('\n👷 Checking Active Workers...')
+            try:
+                inspect = app.control.inspect()
+                stats = inspect.stats()
+                
+                if stats:
+                    self.stdout.write(self.style.SUCCESS(f'   ✅ {len(stats)} worker(s) active'))
+                    for worker_name, worker_stats in stats.items():
+                        self.stdout.write(f'      • {worker_name}')
+                else:
+                    self.stdout.write(self.style.ERROR('   ❌ No active workers'))
+                    self.stdout.write(self.style.WARNING('   💡 Start worker: celery -A config worker --loglevel=info --pool=solo'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'   ❌ Cannot inspect workers: {e}'))
+            
+            # Check registered tasks
+            self.stdout.write('\n📋 Registered Tasks...')
+            try:
+                registered = inspect.registered()
+                if registered:
+                    all_tasks = set()
+                    for worker_tasks in registered.values():
+                        all_tasks.update(worker_tasks)
+                    
+                    prediction_tasks = [t for t in all_tasks if 'prediction' in t]
+                    self.stdout.write(self.style.SUCCESS(f'   ✅ {len(all_tasks)} total tasks registered'))
+                    self.stdout.write(f'   📦 Prediction tasks: {len(prediction_tasks)}')
+                    for task in sorted(prediction_tasks):
+                        self.stdout.write(f'      • {task}')
+                else:
+                    self.stdout.write(self.style.WARNING('   ⚠️  No registered tasks found'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'   ❌ Cannot get registered tasks: {e}'))
+            
+            # Check active tasks
+            self.stdout.write('\n🏃 Active Tasks...')
+            try:
+                active = inspect.active()
+                if active:
+                    task_count = sum(len(tasks) for tasks in active.values())
+                    if task_count > 0:
+                        self.stdout.write(self.style.SUCCESS(f'   ✅ {task_count} task(s) running'))
+                        for worker_name, tasks in active.items():
+                            for task in tasks:
+                                self.stdout.write(f'      • {task["name"]} (ID: {task["id"][:8]}...)')
+                    else:
+                        self.stdout.write(self.style.SUCCESS('   ✅ No active tasks (idle)'))
+                else:
+                    self.stdout.write(self.style.SUCCESS('   ✅ No active tasks (idle)'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'   ❌ Cannot get active tasks: {e}'))
+            
+            # Check scheduled tasks (Beat)
+            self.stdout.write('\n⏰ Scheduled Tasks (Beat)...')
+            try:
+                scheduled = inspect.scheduled()
+                if scheduled:
+                    task_count = sum(len(tasks) for tasks in scheduled.values())
+                    if task_count > 0:
+                        self.stdout.write(self.style.SUCCESS(f'   ✅ {task_count} task(s) scheduled'))
+                        for worker_name, tasks in scheduled.items():
+                            for task in tasks:
+                                self.stdout.write(f'      • {task["request"]["name"]}')
+                    else:
+                        self.stdout.write(self.style.SUCCESS('   ✅ No scheduled tasks'))
+                else:
+                    self.stdout.write(self.style.WARNING('   ⚠️  Beat scheduler not running'))
+                    self.stdout.write(self.style.WARNING('   💡 Start beat: celery -A config beat --loglevel=info'))
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f'   ⚠️  Beat not available: {e}'))
+            
+            # Check Training History
+            self.stdout.write('\n📊 Recent Training History...')
+            try:
+                from prediction.models import TrainingHistory
+                
+                recent = TrainingHistory.objects.order_by('-started_at')[:5]
+                if recent:
+                    self.stdout.write(self.style.SUCCESS(f'   ✅ Last 5 trainings:'))
+                    for training in recent:
+                        status_icon = {
+                            'completed': '✅',
+                            'processing': '🔄',
+                            'failed': '❌',
+                            'pending': '⏳'
+                        }.get(training.status, '❓')
+                        
+                        self.stdout.write(
+                            f'      {status_icon} {training.brand} - {training.status} '
+                            f'({training.started_at.strftime("%Y-%m-%d %H:%M")})'
+                        )
+                else:
+                    self.stdout.write(self.style.WARNING('   ⚠️  No training history'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'   ❌ Error: {e}'))
+            
+            self.stdout.write('\n' + '=' * 70)
+            self.stdout.write(self.style.SUCCESS('✅ Check completed!'))
+            self.stdout.write('=' * 70 + '\n')
+            
+        except ImportError:
+            self.stdout.write(self.style.ERROR('❌ Celery not installed!'))
+            self.stdout.write('   pip install celery redis django-celery-beat django-celery-results')
+            sys.exit(1)
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f'❌ Error: {e}'))
+            sys.exit(1)
