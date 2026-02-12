@@ -79,7 +79,7 @@ class FileDataset(models.Model):
     file_excel = models.FileField(
         upload_to='datasets/',
         verbose_name="File Excel Dataset",
-        help_text="Upload file Excel (.xlsx) dengan kolom: tahun, jarak_tempuh, transmisi, bahan_bakar, harga"
+        help_text="Upload file Excel (.xlsx/.csv) dengan kolom: year/tahun, mileage/jarak_tempuh, transmission/transmisi, fuelType/bahan_bakar, price/harga. Opsional: model, engineSize/cc"
     )
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Tanggal Upload")
     file_size = models.IntegerField(default=0, verbose_name="Ukuran File (bytes)", blank=True)

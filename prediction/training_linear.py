@@ -1,7 +1,7 @@
 # prediction/training_linear.py
 """
-Modul untuk training model Linear Regression sederhana.
-Fokus pada workflow: Upload Excel → Preprocess → Train → Save Model.
+Modul untuk training model Linear Regression dengan Pipeline.
+Format features: year, mileage, engineSize, model, transmission, fuelType.
 """
 
 import os
@@ -12,13 +12,16 @@ from django.conf import settings
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 
 
 class LinearModelTrainer:
     """
-    Class untuk training model Linear Regression.
-    Menggunakan 4 fitur sederhana: tahun, jarak_tempuh, transmisi, bahan_bakar.
+    Class untuk training model Linear Regression dengan Pipeline.
+    Features: year, mileage, engineSize, model, transmission, fuelType.
     """
     
     def __init__(self, brand_name):
@@ -58,52 +61,107 @@ class LinearModelTrainer:
         except Exception as e:
             raise ValueError(f"Error membaca file Excel: {str(e)}")
         
-        # 2. Validasi kolom yang diperlukan
-        required_columns = ['tahun', 'jarak_tempuh', 'transmisi', 'bahan_bakar', 'harga']
+        # 2. Support kolom Bahasa Inggris & Indonesia + mapping ke format standard
+        column_mapping = {
+            'tahun': 'year',
+            'jarak_tempuh': 'mileage',
+            'odometer': 'mileage',
+            'transmisi': 'transmission',
+            'bahan_bakar': 'fuelType',
+            'fuel': 'fuelType',
+            'fuel_type': 'fuelType',
+            'harga': 'price',
+            'cc': 'engineSize',
+            'engine_size': 'engineSize',
+            'kapasitas_mesin': 'engineSize'
+        }
+        
+        # Rename kolom ke format standard (lowercase dulu)
+        df.columns = df.columns.str.lower()
+        df = df.rename(columns=column_mapping)
+        
+        # 3. Validasi kolom yang diperlukan (format baru: English)
+        required_columns = ['year', 'mileage', 'transmission', 'fuelType', 'price']
+        
+        # engineSize dan model opsional, tapi akan di-handle
+        if 'engineSize' not in df.columns:
+            df['engineSize'] = 1500  # Default CC
+            self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Kolom engineSize tidak ada, menggunakan default: 1500")
+        
+        if 'model' not in df.columns:
+            df['model'] = 'Unknown'  # Default model name
+            self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Kolom model tidak ada, menggunakan default: Unknown")
+        
         missing_columns = [col for col in required_columns if col not in df.columns]
         
         if missing_columns:
-            raise ValueError(f"Kolom tidak ditemukan: {', '.join(missing_columns)}. Pastikan Excel memiliki kolom: {', '.join(required_columns)}")
+            raise ValueError(
+                f"Kolom tidak ditemukan: {', '.join(missing_columns)}. "
+                f"Pastikan Excel memiliki kolom: year/tahun, mileage/jarak_tempuh, "
+                f"transmission/transmisi, fuelType/bahan_bakar, price/harga"
+            )
         
-        # 3. Drop baris kosong
+        # 4. Bersihkan data numerik (convert format teks ke angka)
+        def clean_numeric(value):
+            """Convert berbagai format teks ke angka"""
+            if pd.isna(value):
+                return value
+            if isinstance(value, (int, float)):
+                return value
+            
+            # Convert ke string dan lowercase
+            value = str(value).lower().strip()
+            
+            # Hapus unit km, ribu, rb, jt, juta, m, mil, dsb
+            value = value.replace('km', '').replace('ribu', '000').replace('rb', '000')
+            value = value.replace('jt', '000000').replace('juta', '000000')
+            value = value.replace('m', '000000').replace('mil', '000000')
+            value = value.replace('milyar', '000000000').replace('miliar', '000000000')
+            
+            # Hapus separator titik, koma, spasi
+            value = value.replace('.', '').replace(',', '').replace(' ', '')
+            
+            try:
+                return float(value)
+            except:
+                return None
+        
+        # Apply cleaning ke kolom numerik
+        for col in ['year', 'mileage', 'price', 'engineSize']:
+            if col in df.columns:
+                df[col] = df[col].apply(clean_numeric)
+        
+        self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Data numerik dibersihkan")
+        
+        # 5. Standardize categorical values
+        # Transmission: Manual/Automatic
+        if 'transmission' in df.columns:
+            df['transmission'] = df['transmission'].astype(str).str.lower()
+            df['transmission'] = df['transmission'].replace({
+                'mt': 'Manual',
+                'manual': 'Manual',
+                'matic': 'Automatic',
+                'at': 'Automatic',
+                'automatic': 'Automatic'
+            })
+        
+        # FuelType: Petrol/Diesel
+        if 'fuelType' in df.columns:
+            df['fuelType'] = df['fuelType'].astype(str).str.lower()
+            df['fuelType'] = df['fuelType'].replace({
+                'bensin': 'Petrol',
+                'petrol': 'Petrol',
+                'gasoline': 'Petrol',
+                'diesel': 'Diesel',
+                'solar': 'Diesel'
+            })
+        
+        # 6. Drop baris kosong
         initial_rows = len(df)
-        df = df.dropna(subset=required_columns)
+        df = df.dropna(subset=['year', 'mileage', 'transmission', 'fuelType', 'price'])
         dropped_rows = initial_rows - len(df)
         if dropped_rows > 0:
             self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Dihapus {dropped_rows} baris dengan data kosong")
-        
-        # 4. Preprocessing: Mapping Transmisi
-        self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Melakukan preprocessing...")
-        
-        transmisi_mapping = {
-            'Manual': 0,
-            'manual': 0,
-            'MT': 0,
-            'Matic': 1,
-            'matic': 1,
-            'Automatic': 1,
-            'automatic': 1,
-            'AT': 1
-        }
-        df['transmisi'] = df['transmisi'].map(transmisi_mapping)
-        
-        # 5. Preprocessing: Mapping Bahan Bakar
-        fuel_mapping = {
-            'Bensin': 1,
-            'bensin': 1,
-            'Petrol': 1,
-            'petrol': 1,
-            'Gasoline': 1,
-            'gasoline': 1,
-            'Diesel': 0,
-            'diesel': 0,
-            'Solar': 0,
-            'solar': 0
-        }
-        df['bahan_bakar'] = df['bahan_bakar'].map(fuel_mapping)
-        
-        # 6. Drop baris yang gagal di-mapping
-        df = df.dropna(subset=['transmisi', 'bahan_bakar'])
         
         if len(df) < 10:
             raise ValueError(f"Data terlalu sedikit setelah preprocessing: {len(df)} baris. Minimal 10 baris diperlukan.")
@@ -111,20 +169,23 @@ class LinearModelTrainer:
         self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Data setelah preprocessing: {len(df)} baris")
         
         # 7. Pisahkan Features dan Target
-        X = df[['tahun', 'jarak_tempuh', 'transmisi', 'bahan_bakar']]
-        y = df['harga']
+        # Features: year, mileage, engineSize (numeric) + model, transmission, fuelType (categorical)
+        feature_columns = ['year', 'mileage', 'engineSize', 'model', 'transmission', 'fuelType']
+        X = df[feature_columns]
+        y = df['price']
         
         return X, y
     
     def train_model(self, X, y):
         """
-        Latih model Linear Regression.
+        Latih model Linear Regression dengan Pipeline.
+        Pipeline: ColumnTransformer (passthrough numeric, OneHotEncode categorical) + LinearRegression
         
         Args:
-            X: Features
-            y: Target
+            X: Features DataFrame dengan kolom: year, mileage, engineSize, model, transmission, fuelType
+            y: Target pandas Series (price)
         """
-        self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Memulai training Linear Regression...")
+        self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Memulai training Linear Regression dengan Pipeline...")
         
         # 1. Split data 80% train, 20% test
         X_train, X_test, y_train, y_test = train_test_split(
@@ -133,13 +194,31 @@ class LinearModelTrainer:
         
         self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Split data: {len(X_train)} train, {len(X_test)} test")
         
-        # 2. Training
-        self.model = LinearRegression()
+        # 2. Setup Pipeline yang sama dengan model lama
+        # Numeric features: passthrough (no scaling)
+        # Categorical features: OneHotEncoder
+        numeric_features = ['year', 'mileage', 'engineSize']
+        categorical_features = ['model', 'transmission', 'fuelType']
+        
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', 'passthrough', numeric_features),
+                ('cat', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), categorical_features)
+            ]
+        )
+        
+        # Pipeline: preprocessor + regressor
+        self.model = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', LinearRegression())
+        ])
+        
+        # 3. Training
         self.model.fit(X_train, y_train)
         
         self.log.append(f"[{datetime.now().strftime('%H:%M:%S')}] Training selesai!")
         
-        # 3. Prediksi dan Evaluasi
+        # 4. Prediksi dan Evaluasi
         y_pred = self.model.predict(X_test)
         
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
@@ -162,7 +241,8 @@ class LinearModelTrainer:
     
     def save_model(self, model_dir='ml_models'):
         """
-        Simpan model ke file .pkl dengan format <brand>_Model.pkl
+        Simpan model ke file .pkl dengan format <Brand>_Model.pkl
+        (Brand dengan huruf pertama kapital untuk konsistensi)
         
         Args:
             model_dir: Direktori untuk menyimpan model
@@ -174,8 +254,8 @@ class LinearModelTrainer:
         model_path = os.path.join(settings.BASE_DIR, model_dir)
         os.makedirs(model_path, exist_ok=True)
         
-        # Format nama file: <Brand>_Model.pkl
-        model_filename = f"{self.brand_name}_Model.pkl"
+        # Format nama file: <Brand>_Model.pkl (capitalize untuk konsistensi)
+        model_filename = f"{self.brand_name.capitalize()}_Model.pkl"
         full_path = os.path.join(model_path, model_filename)
         
         # Simpan model menggunakan joblib (overwrite jika sudah ada)

@@ -5,7 +5,7 @@ Berisi fungsi pemuatan model, pemrosesan data, dan prediksi harga mobil.
 """
 
 import os
-import pickle
+import joblib
 import pandas as pd
 from django.conf import settings
 
@@ -36,6 +36,7 @@ def hitung_estimasi_harga(brand, model_name, year, mileage, transmission, fuel, 
     try:
         # 1. Persiapan data input sebagai DataFrame
         # PENTING: Nama kolom harus SAMA PERSIS dengan yang digunakan saat training model
+        # Model lama menggunakan Pipeline dengan features: year, mileage, engineSize, model, transmission, fuelType
         final_features = pd.DataFrame({
             'year': [year],
             'mileage': [mileage],
@@ -50,31 +51,36 @@ def hitung_estimasi_harga(brand, model_name, year, mileage, transmission, fuel, 
         # 2. Load Model PKL dengan caching
         brand_key = brand.lower()
         
-        # Mapping nama brand ke nama file model
-        model_file_mapping = {
-            'toyota': 'Toyota_Model.pkl',
-            'honda': 'Honda_Model.pkl',
-            'mitsubishi': 'Mitsubishi_Model.pkl',
-            'suzuki': 'Suzuki_Model.pkl',
-            'daihatsu': 'Daihatsu_Model.pkl'
-        }
-        
         # Cek apakah model sudah ada di cache
         if brand_key not in _ml_models_cache:
-            model_filename = model_file_mapping.get(brand_key)
+            # Coba beberapa variasi nama file untuk backward compatibility
+            model_filenames = [
+                f"{brand.capitalize()}_Model.pkl",  # Wuling_Model.pkl (preferred)
+                f"{brand}_Model.pkl",               # wuling_Model.pkl (backward compat)
+                f"{brand.upper()}_Model.pkl",       # WULING_Model.pkl (just in case)
+            ]
             
-            if not model_filename:
-                raise ValueError(f'Model untuk brand "{brand}" tidak tersedia')
+            model_path = None
+            model_filename = None
             
-            model_path = os.path.join(settings.BASE_DIR, 'ml_models', model_filename)
+            # Cari file yang ada
+            for filename in model_filenames:
+                test_path = os.path.join(settings.BASE_DIR, 'ml_models', filename)
+                if os.path.exists(test_path):
+                    model_path = test_path
+                    model_filename = filename
+                    break
             
-            if not os.path.exists(model_path):
-                raise FileNotFoundError(f'File model {model_filename} tidak ditemukan di {model_path}')
+            if not model_path:
+                raise FileNotFoundError(
+                    f'Model untuk brand "{brand}" belum tersedia. '
+                    f'Silakan train model terlebih dahulu di Admin > Train Models. '
+                    f'File yang dicari: {model_filenames[0]}'
+                )
             
             # Load model dan simpan ke cache
             print(f"[ML] Loading model: {model_filename}")
-            with open(model_path, 'rb') as file:
-                _ml_models_cache[brand_key] = pickle.load(file)
+            _ml_models_cache[brand_key] = joblib.load(model_path)
             print(f"[ML] Model {brand} berhasil dimuat dan di-cache")
         else:
             print(f"[ML] Menggunakan cached model untuk {brand}")
