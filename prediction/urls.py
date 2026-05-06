@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views  # Import dari folder prediction itu sendiri
+from . import views 
 
 urlpatterns = [
     # Halaman Tampilan Form
@@ -7,7 +7,4 @@ urlpatterns = [
     
     # Logika Hitung Prediksi (AJAX/Post)
     path('run/', views.run_prediction, name='run_prediction'),
-    
-    # Halaman Riwayat
-    path('history/', views.history_page, name='predict_history'),
 ]

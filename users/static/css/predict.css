@@ -1,16 +1,17 @@
+/* === 1. VARIABEL & RESET GLOBAL === */
 :root {
-    --primary-bg: #f8fafc;
-    --secondary-bg: #ffffff;
-    --accent-blue: #3b82f6;
-    --accent-blue-dark: #2563eb;
-    --text-primary: #000000;
-    --text-secondary: #1f2937;
-    --text-muted: #4b5563;
-    
-    --card-bg: #ffffff;
-    --card-border: #000000;
-    --light-blue-accent: var(--accent-blue);
-    --dark-bg: var(--primary-bg);
+    --primary-color: #00bfff;
+    --background-color: #030f27;
+    --surface-color: rgba(255, 255, 255, 0.05);
+    --text-color: #e6f1ff;
+    --text-secondary-color: #a0a0a0;
+    --border-color: rgba(255, 255, 255, 0.2);
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.2);
+    --light-blue-accent: #00bfff;
+    --dark-bg: #030f27;
+    --text-primary: #ffffff;
+    --text-secondary: #e6f1ff;
 }
 
 * { 
@@ -18,46 +19,99 @@
     padding: 0; 
     box-sizing: border-box; 
 }
-/* predict.css - Matching dengan Dashboard Aventro */
 
-/* Hapus reset body/root karena sudah dihandle base.html */
-
-.main-content {
-    padding: 2rem 5%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: calc(100vh - 80px);
-    padding-top: 120px;
+body {
+    background-color: var(--background-color);
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--background-color), transparent 20%) 0%, color-mix(in srgb, var(--background-color), transparent 10%) 100%), url('/static/images/bg1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--text-color);
 }
 
+/* === 2. LAYOUT UTAMA & KARTU INFO === */
+.main-content {
+    padding: 7rem 5% 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+}
+
+.content-sections {
+    padding: 5rem 5% 4rem;
+    display: flex;
+    align-items: center;
+}
+
+.content-sections .container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+}
+
+.info-section, .factor-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-heading {
+    max-width: 900px;
+    margin: 0 auto 0.5rem;
+    text-align: center;
+}
+
+.section-heading h2 {
+    font-size: 2rem;
+    line-height: 1.2;
+    color: #ffffff;
+    margin-bottom: 0.6rem;
+}
+
+.section-heading p {
+    color: var(--text-secondary-color);
+    font-size: 1rem;
+}
+
+.info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; gap: 1.25rem; }
+.factor-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); display: grid; gap: 1.25rem; }
+
+.info-card, .factor-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 1.6rem;
+    text-align: left;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.info-card i, .factor-card i {
+    font-size: 1.4rem;
+    color: var(--light-blue-accent);
+    margin-bottom: 0.9rem;
+}
+
+.info-card h3, .factor-card h3 { color: #ffffff; margin-bottom: 0.6rem; font-size: 1.05rem; }
+.info-card p, .factor-card p { color: var(--text-secondary-color); line-height: 1.6; font-size: 0.95rem; }
+
+/* === 3. FORM PREDIKSI (GLASSMORPHISM) === */
 .prediction-container {
     width: 100%;
     max-width: 1000px;
 }
 
-.prediction-container h1 {
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 2.5rem;
-    color: var(--text-primary);
-    font-weight: 700;
-}
-
-/* === FORM CONTAINER (Gaya Glass + Gradien Kilau) === */
 .form-step {
-    background: var(--card-bg);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--card-bg), transparent 20%) 0%, color-mix(in srgb, var(--card-bg), transparent 10%) 100%);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2.5rem;
-    display: none;
-    animation: fadeIn 0.4s ease-out;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    border-radius: 16px; 
+    padding: 3rem;
+    display: none; 
+    animation: fadeIn 0.5s ease-in-out;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
 }
 
-.form-step.active {
-    display: block; 
-}
+.form-step.active { display: block; }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -72,24 +126,12 @@
     color: var(--text-primary);
 }
 
-/* === GRID PILIHAN (Merek & Model) === */
-.brand-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1.2rem;
-}
+/* === 4. GRID PILIHAN (MEREK, MODEL, SPESIFIKASI) === */
+.brand-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1.2rem; }
+.model-group { display: none; grid-template-columns: repeat(auto-fit, minmax(110px , 1fr)); gap: 1.2rem; width: 100%; justify-content: center; }
 
-.model-group {
-    display: none; 
-    grid-template-columns: repeat(auto-fit, minmax(110px , 1fr));
-    gap: 1.2rem;
-    width: 100%;
-    justify-content: center; 
-}
-
-/* Kotak Item (Card Kecil) */
-.brand-box, .model-box { 
-    background: var(--card-bg);
+.brand-box, .model-box, .spec-box { 
+    background: rgba(255, 255, 255, 0.03); 
     border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 1.5rem 1rem;
@@ -98,473 +140,188 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     color: var(--text-secondary);
 }
 
 .brand-box { height: 120px; }
 .model-box { height: 130px; } 
+.spec-box { height: 120px; }
 
-/* Hover State */
-.brand-box:hover, .model-box:hover { 
-    border-color: var(--accent-blue);
-    background: #eff6ff;
-    transform: translateY(-2px);
+.brand-box:hover, .model-box:hover, .spec-box:hover,
+.brand-box.selected, .model-box.selected, .spec-box.selected { 
+    border-color: var(--light-blue-accent);
+    background: rgba(0, 191, 255, 0.15); 
     color: var(--text-primary);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 191, 255, 0.15);
 }
 
 .brand-box img { 
-    max-height: 50px;
-    width: auto;
-    object-fit: contain;
-    filter: brightness(0.9); /* Sedikit redup agar menyatu */
-    transition: filter 0.3s;
+    max-height: 50px; width: auto; object-fit: contain; filter: brightness(0.9); transition: filter 0.3s;
 }
-.brand-box:hover img { filter: brightness(1.2); } /* Terang saat hover */
+.brand-box:hover img, .brand-box.selected img { filter: brightness(1.2); } 
 
-/* --- STYLE IKON MOBIL (UNIFORM & THIN LOOK) --- */
-
-.model-box i { 
-    font-size: 2rem; 
-    margin-bottom: 0.5rem; 
-    color: var(--text-muted);
-    transition: all 0.2s ease;
+.model-box i, .spec-box i { 
+    font-size: 2rem; margin-bottom: 0.5rem; color: transparent;
+    -webkit-text-stroke: 1px var(--text-secondary); transition: all 0.3s ease;
 }
 
-.model-box:hover i, 
-.model-box.selected i { 
-    color: var(--accent-blue);
-    transform: scale(1.1);
+.model-box:hover i, .model-box.selected i, .spec-box:hover i, .spec-box.selected i { 
+    -webkit-text-stroke: 1.5px var(--light-blue-accent);
+    color: rgba(0, 191, 255, 0.1); transform: scale(1.1); filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.6));
 }
 
-.model-box span { 
-    font-weight: 500; 
-    font-size: 0.9rem; 
-    text-align: center; 
-}
+.model-box span, .spec-box span { font-weight: 500; font-size: 0.9rem; text-align: center; }
 
-/* Active/Selected State */
-.brand-box.selected, .model-box.selected {
-    border-color: var(--accent-blue);
-    background: #dbeafe;
-    color: var(--text-primary);
-    box-shadow: 0 0 0 2px var(--accent-blue);
-    transform: scale(1.02);
-}
-.model-box.selected svg { stroke: var(--light-blue-accent); }
+/* === 5. FORM INPUT AKHIR (STEP 4) === */
+.specs-wrapper { display: flex; gap: 2rem; width: 100%; }
+.spec-section { flex: 1; }
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-/* --- FORM INPUTS (Langkah Terakhir) --- */
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 Kolom agar lebih rapi */
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
+.final-step-container { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start; }
 
-.form-group label { 
-    margin-bottom: 0.6rem; 
-    font-weight: 500; 
-    color: var(--text-secondary); 
-    font-size: 0.95rem; 
-    display: block;
-}
-
-.form-group input, .form-group select { 
-    background-color: white;
-    border: 1px solid var(--card-border);
-    border-radius: 8px; 
-    padding: 0.8rem 1rem; 
-    font-size: 1rem; 
-    width: 100%;
-    color: var(--text-primary);
-    transition: all 0.2s ease;
-}
-
-/* Focus State (Saat diklik) */
-.form-group input:focus, .form-group select:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* --- NAVIGASI TOMBOL --- */
-.form-navigation { 
-    display: flex; 
-    justify-content: space-between;
-    margin-top: 2rem; 
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.nav-btn { 
-    padding: 0.9rem 2.5rem; 
-    font-size: 1rem; 
-    font-weight: 600; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.prev-btn { 
-    background: transparent;
-    border: 1px solid var(--text-secondary);
-    color: var(--text-secondary);
-}
-.prev-btn:hover {
-    border-color: var(--text-primary);
-    color: var(--text-primary);
-    background: rgba(255,255,255,0.05);
-}
-
-.submit-btn { 
-    background: var(--accent-blue);
-    border: 1px solid var(--accent-blue);
-    color: white;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.submit-btn:hover {
-    background: var(--accent-blue-dark);
-    border-color: var(--accent-blue-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-
-/* --- LAYOUT STEP 3 (Ringkasan + Form) --- */
-.final-step-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr; /* Ringkasan kecil, Form besar */
-    gap: 2rem;
-    align-items: start;
-}
-
-/* Kartu Ringkasan di Kiri */
 .selection-summary {
-    background: rgba(0,0,0,0.2);
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid var(--card-border);
-    text-align: center;
+    background: rgba(0,0,0,0.2); padding: 2rem; border-radius: 12px; border: 1px solid var(--card-border); text-align: center;
 }
 
-.summary-box img {
-    width: 100%;
-    max-width: 200px;
-    margin: 1.5rem 0;
+/* PAWANG GAMBAR RAKSASA (Step 4) */
+#summary-image {
+    width: 100% !important;
+    max-width: 150px !important; 
+    height: auto !important;
+    object-fit: contain;
+    margin: 1.5rem auto;
     filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
 
-.summary-box h4 {
-    color: var(--light-blue-accent);
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
+.summary-box h4 { color: var(--light-blue-accent); font-size: 1.2rem; margin-bottom: 0.5rem; }
+
+.details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+.form-group.full-width { grid-column: 1 / -1; }
+
+.form-group label { margin-bottom: 0.6rem; font-weight: 500; color: var(--text-secondary); font-size: 0.95rem; display: block; }
+.form-group input, .form-group select { 
+    background-color: rgba(0, 0, 0, 0.3); border: 1px solid var(--card-border); border-radius: 8px; 
+    padding: 0.9rem 1rem; font-size: 1rem; width: 100%; color: var(--text-primary); transition: all 0.3s ease;
+}
+.form-group input:focus, .form-group select:focus {
+    outline: none; border-color: var(--light-blue-accent); background-color: rgba(0, 0, 0, 0.5); box-shadow: 0 0 0 3px rgba(0, 191, 255, 0.1);
 }
 
-/* --- MODAL HASIL --- */
+/* === 6. NAVIGASI TOMBOL FORM === */
+.form-navigation { 
+    display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.nav-btn { 
+    padding: 0.9rem 2.5rem; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; 
+    transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;
+}
+
+.prev-btn { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); }
+.prev-btn:hover { border-color: var(--text-primary); color: var(--text-primary); background: rgba(255,255,255,0.05); }
+
+.submit-btn { background: var(--light-blue-accent); border: 1px solid var(--light-blue-accent); color: var(--dark-bg); }
+.submit-btn:hover { background: #0099e0; border-color: #0099e0; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 191, 255, 0.3); }
+
+/* === 7. MODAL HASIL PREDIKSI (PREMIUM & DIET COMPACT) === */
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    align-items: center;
-    justify-content: center;
+    display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(3, 15, 39, 0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center;
 }
 
 .modal-content {
-    background: white;
-    border: 2px solid #000000;
-    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(10, 25, 48, 0.95) 0%, rgba(3, 15, 39, 0.98) 100%) !important;
+    border: 1px solid var(--light-blue-accent) !important;
+    padding: 1.5rem 2rem !important;
     width: 90%;
-    max-width: 800px;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: modalSlide 0.4s ease-out;
+    max-width: 780px !important; /* Ramping agar proporsional */
+    max-height: 90vh; /* Tidak nabrak bawah layar */
+    overflow-y: auto; /* Scroll jika layar sangat pendek */
+    position: relative;
+    border-radius: 16px;
+    box-shadow: 0 0 50px rgba(0, 191, 255, 0.2);
+    animation: zoomIn 0.3s ease-out;
 }
 
-/* Custom scrollbar untuk modal */
-.modal-content::-webkit-scrollbar {
-    width: 8px;
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+.modal-close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: var(--text-secondary-color); cursor: pointer; transition: 0.3s; }
+.modal-close-btn:hover { color: #ffffff; }
+
+/* Modal Header */
+.icon-success-wrapper { font-size: 2.2rem; color: #00ff88; margin-bottom: 0.5rem; filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.3)); }
+.modal-header { text-align: center; }
+.modal-header h3 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.2rem; color: var(--text-primary); }
+.modal-header p { font-size: 0.9rem; margin-bottom: 0; color: var(--text-secondary-color); }
+
+/* Layout Kiri Kanan Modal */
+.modal-body-split { display: flex; gap: 1.5rem; align-items: stretch; margin: 1.2rem 0; }
+
+.modal-left-panel { flex: 1; display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+
+.modal-car-summary {
+    background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 0.8rem; display: flex; 
+    align-items: center; gap: 1rem; border: 1px solid rgba(255, 255, 255, 0.1); margin: 0 !important;
 }
 
-.modal-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 0 16px 16px 0;
+/* PAWANG GAMBAR RAKSASA (Modal) */
+#modal-summary-image {
+    max-width: 60px !important; /* Paksa kecil di dalam modal */
+    height: auto !important;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
 }
 
-.modal-content::-webkit-scrollbar-thumb {
-    background: #3b82f6;
-    border-radius: 4px;
+.modal-detail-sub { font-size: 0.8rem; color: var(--text-secondary-color); margin-top: 2px; display: inline-block; }
+
+.conclusion-box { margin-top: 0 !important; padding: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 12px; }
+.conclusion-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.8rem; color: var(--light-blue-accent); }
+.conclusion-header h4 { font-size: 1rem; color: var(--text-primary); margin: 0; }
+.conclusion-divider { height: 1px; background: linear-gradient(90deg, var(--light-blue-accent) 0%, transparent 100%); margin-bottom: 0.8rem; opacity: 0.5; }
+.conclusion-text { font-size: 0.85rem; line-height: 1.4; color: var(--text-secondary); margin: 0; }
+.highlight-text { color: var(--light-blue-accent); font-weight: 600; }
+
+/* Panel Kanan (Harga) */
+.modal-right-panel {
+    flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center;
+    background: rgba(0, 191, 255, 0.04); border: 1px dashed rgba(0, 191, 255, 0.3); border-radius: 16px; padding: 1.5rem 1rem; 
 }
 
-.modal-content::-webkit-scrollbar-thumb:hover {
-    background: #2563eb;
-}
-
-@keyframes modalSlide {
-    from { 
-        opacity: 0; 
-        transform: scale(0.9) translateY(-20px);
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1) translateY(0);
-    }
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    padding: 1.25rem 2rem;
-    text-align: center;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.icon-success {
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    flex-shrink: 0;
-}
-
-.icon-success i {
-    font-size: 1.6rem;
-    color: white;
-}
-
-.modal-header h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 0;
-    color: white;
-}
-
-.modal-body {
-    padding: 1.75rem 2rem;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 1.5rem;
-    align-items: start;
-}
-
+.price-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--light-blue-accent); font-weight: 700; }
 .predicted-price {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #000000;
-    margin: 0;
-    padding: 1.25rem 0.75rem;
-    background: #f0f9ff;
-    border-radius: 10px;
-    border: 2px solid #3b82f6;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 2.2rem !important; /* Harga didiskon ukurannya */
+    background: linear-gradient(to bottom, #ffffff, var(--light-blue-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 800 !important; margin: 0.2rem 0 !important;
 }
 
-.conclusion-box {
-    background: #f8fafc;
-    border: 1px solid #000000;
-    border-radius: 10px;
-    padding: 1.25rem;
-    text-align: left;
+.predicted-range { font-size: 0.85rem; color: var(--text-secondary-color); margin-top: 5px; margin-bottom: 0; }
+.highlight-range { display: inline-block; margin-top: 3px; color: #00ff88; font-weight: 700; font-size: 1rem; }
+
+/* Tombol Selesai Premium */
+.btn-selesai-premium {
+    appearance: none; -webkit-appearance: none; width: 100%; padding: 0.9rem;
+    background: linear-gradient(135deg, var(--light-blue-accent), #007bff); border: none; border-radius: 50px; 
+    color: #ffffff; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;
+    text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0, 191, 255, 0.25); outline: none; 
 }
 
-.conclusion-header {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.6rem;
-    border-bottom: 2px solid #e2e8f0;
+.btn-selesai-premium:hover {
+    transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.45); background: linear-gradient(135deg, #00d0ff, #0056b3);
 }
 
-.conclusion-header i {
-    font-size: 1.1rem;
-    color: #3b82f6;
+/* === 8. RESPONSIF LAYAR KECIL (MOBILE) === */
+@media (max-width: 992px) {
+    .info-grid, .factor-grid { grid-template-columns: 1fr; }
+    .final-step-container { grid-template-columns: 1fr; }
 }
 
-.conclusion-header h4 {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #000000;
-    margin: 0;
-}
-
-.conclusion-text {
-    font-size: 0.85rem;
-    color: #1f2937;
-    line-height: 1.6;
-    font-weight: 400;
-}
-
-.modal-footer {
-    padding: 1.25rem 2rem;
-    background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    text-align: center;
-}
-
-.btn-selesai {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    border: none;
-    padding: 0.75rem 2.5rem;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.btn-selesai:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.btn-selesai:active {
-    transform: translateY(0);
-}
-
-.btn-selesai i {
-    font-size: 1.1rem;
-}
-
-/* Highlight text dalam conclusion */
-.highlight-text {
-    color: #3b82f6;
-    font-weight: 600;
-}
-
-/* Responsif */
 @media (max-width: 768px) {
-    .final-step-container {
-        grid-template-columns: 1fr; /* Tumpuk vertikal di HP */
-    }
-    .details-grid {
-        grid-template-columns: 1fr; /* 1 kolom input di HP */
-    }
+    .details-grid { grid-template-columns: 1fr; }
+    .specs-wrapper { flex-direction: column; }
     .form-step { padding: 1.5rem; }
     
-    /* Modal Responsive */
-    .modal-body {
-        grid-template-columns: 1fr;
-        padding: 1.5rem;
-    }
-    
-    .predicted-price {
-        font-size: 1.8rem;
-        padding: 1rem;
-    }
-    
-    .modal-header {
-        padding: 1rem;
-    }
-    
-    .modal-header h3 {
-        font-size: 1.2rem;
-    }
-    
-    .conclusion-text {
-        font-size: 0.8rem;
-    }
-}
-/* === STYLE STEP 3: SIDE-BY-SIDE (BERDAMPINGAN) === */
-
-/* Wrapper utama untuk mensejajarkan Transmisi & Fuel */
-.specs-wrapper {
-    display: flex;
-    gap: 2rem; /* Jarak antara kolom kiri dan kanan */
-    width: 100%;
-}
-
-/* Setiap kolom mengambil ruang 50:50 */
-.spec-section {
-    flex: 1; 
-}
-
-/* Grid tombol di dalam setiap kolom (2 tombol per baris) */
-.spec-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 1rem;
-}
-
-/* Style Kotak Pilihan (Sama seperti sebelumnya) */
-.spec-box {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 1.5rem; /* Sedikit dikecilkan paddingnya agar muat */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-secondary);
-    height: 100%; /* Agar tinggi seragam */
-    min-height: 120px;
-}
-
-.spec-box i {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--text-secondary);
-    transition: all 0.3s ease;
-}
-
-.spec-box span {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-/* Hover & Selected State */
-.spec-box:hover, .spec-box.selected {
-    border-color: var(--light-blue-accent);
-    background: rgba(0, 191, 255, 0.15);
-    color: var(--text-primary);
-    box-shadow: 0 5px 15px rgba(0, 191, 255, 0.15);
-    transform: translateY(-3px);
-}
-
-.spec-box:hover i, .spec-box.selected i {
-    -webkit-text-stroke: 1.5px var(--light-blue-accent);
-    color: rgba(0, 191, 255, 0.1);
-    transform: scale(1.1);
-    filter: drop-shadow(0 0 8px rgba(0, 191, 255, 0.6));
-}
-
-/* --- RESPONSIF (Untuk HP) --- */
-@media (max-width: 768px) {
-    /* Di layar kecil, kembali ditumpuk atas-bawah agar tidak sempit */
-    .specs-wrapper {
-        flex-direction: column;
-        gap: 2rem;
-    }
+    .modal-body-split { flex-direction: column; } /* Tumpuk kiri-kanan jadi atas-bawah di HP */
+    .predicted-price { font-size: 1.8rem !important; }
 }

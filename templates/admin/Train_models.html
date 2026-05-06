@@ -1,0 +1,36 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/admin/train_models.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <div class="train-container">
+        <!-- Form Card -->
+        <div class="train-card">
+            <div class="train-card-header">
+                <h2>
+                    Train Machine Learning Model
+                </h2>
+            </div>
+            <div class="train-card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_brand">
+                            Pilih Brand Mobil
+                        </label>
+                        {{ form.brand }}
+                    </div>
+                    <button type="submit" class="btn-train">
+                        <span>Mulai Training Model</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

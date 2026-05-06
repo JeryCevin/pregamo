@@ -1,6 +1,6 @@
 /* =====================================
    LOGIN PAGE - PreGaMo
-   Professional Light Mode
+   Dark Theme (Matching Dashboard)
 ===================================== */
 
 * {
@@ -11,12 +11,17 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    background-color: #030f27;
+    background-image: linear-gradient(135deg, color-mix(in srgb, #030f27, transparent 20%) 0%, color-mix(in srgb, #030f27, transparent 10%) 100%),
+        url("/static/images/bg1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #1e293b;
+    color: #e6f1ff;
     padding: 20px;
 }
 
@@ -25,9 +30,11 @@ body {
     width: 100%;
     max-width: 900px;
     min-height: 550px;
-    background: white;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08),
-                0 0 0 1px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     border-radius: 16px;
     overflow: hidden;
     animation: fadeIn 0.6s ease-out;
@@ -38,6 +45,7 @@ body {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -46,13 +54,14 @@ body {
 
 .left-panel {
     flex: 1;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.2) 0%, rgba(0, 123, 255, 0.15) 100%);
     color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 60px 50px;
     position: relative;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .left-panel h1 {
@@ -60,7 +69,8 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
     line-height: 1.2;
-    color: white;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
 }
 
 .left-panel p {
@@ -79,7 +89,7 @@ body {
     align-items: center;
     padding: 50px 40px;
     text-align: center;
-    background: white;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .login-form {
@@ -91,12 +101,12 @@ body {
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 0.8rem;
-    color: #1e293b;
+    color: #ffffff;
 }
 
 .login-form p {
     font-size: 1rem;
-    color: #64748b;
+    color: #a0a0a0;
     margin-bottom: 2.5rem;
     line-height: 1.6;
 }
@@ -108,28 +118,28 @@ body {
     gap: 12px;
     width: 100%;
     padding: 14px 24px;
-    background: white;
-    color: #1e293b;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 600;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     text-decoration: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .google-login-btn:hover {
-    background: #f8fafc;
-    border-color: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-    transform: translateY(-1px);
+    background: rgba(0, 191, 255, 0.1);
+    border-color: #00bfff;
+    box-shadow: 0 5px 15px rgba(0, 191, 255, 0.3);
+    transform: translateY(-2px);
 }
 
 .google-login-btn:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .google-login-btn svg {
@@ -149,12 +159,14 @@ body {
         height: 250px;
         padding: 40px 30px;
         text-align: center;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .left-panel h1 {
         font-size: 2rem;
     }
-    
+
     .left-panel p {
         font-size: 0.95rem;
         max-width: 100%;

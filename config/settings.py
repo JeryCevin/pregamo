@@ -45,9 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',  # Untuk format angka
-    'import_export',  # Django Import-Export untuk fitur Import/Export Excel
-    # 'django_celery_beat',  # Celery Beat - Disabled (not used)
-    # 'django_celery_results',  # Celery Results - Disabled (not used)
     'users',
     'dashboard',  
     'prediction',  
@@ -150,49 +147,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# ============================================================================
-# CELERY CONFIGURATION - Untuk Background Tasks & Autonomous Training
-# ============================================================================
-
-# Celery Broker - Gunakan Redis untuk production, memory untuk development
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Production: gunakan Redis
-# Alternatif development (tanpa Redis): CELERY_BROKER_URL = 'memory://'
-
-# Celery Result Backend
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-# Alternatif: CELERY_RESULT_BACKEND = 'django-db'  # Simpan result di database
-
-# Celery settings - Disabled (using synchronous training instead)
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'Asia/Jakarta'
-# CELERY_TASK_TRACK_STARTED = True
-# CELERY_TASK_TIME_LIMIT = 30 * 60
-# CELERY_TASK_SOFT_TIME_LIMIT = 25 * 60
-# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-# Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'celery.log',
-        },
-    },
-    'loggers': {
-        'prediction': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        },
-    },
-}
-
 
 # ==========================================
 # DJANGO JAZZMIN CONFIGURATION
@@ -200,13 +154,13 @@ LOGGING = {
 
 JAZZMIN_SETTINGS = {
     # Judul aplikasi di halaman login dan header
-    "site_title": "Admin Prediksi Harga Mobil",
+    "site_title": "Pregamo - Admin",
     
     # Judul di header admin
-    "site_header": "Sistem Prediksi Harga Mobil",
+    "site_header": "Sistem Prediksi Harga Mobil Bekas",
     
     # Teks brand di sidebar (tidak menggunakan logo gambar)
-    "site_brand": "Admin Prediksi Mobil",
+    "site_brand": "Pregamo - Admin",
     
     # Logo di halaman login (kosongkan karena hanya menggunakan teks)
     "site_logo": None,
@@ -217,14 +171,14 @@ JAZZMIN_SETTINGS = {
     # Classes untuk logo
     "site_logo_classes": "img-circle",
     
-    # Favicon (kosongkan atau bisa tambahkan nanti)
-    "site_icon": None,
+    # Icon logo (menggunakan FontAwesome star icon)
+    "site_icon": "fas fa-star",
     
     # Pesan sambutan di halaman admin (Bahasa Indonesia)
     "welcome_sign": "Selamat Datang di Panel Admin",
     
     # Copyright footer (Bahasa Indonesia)
-    "copyright": "Sistem Prediksi Harga Mobil © 2026",
+    "copyright": "Pregamo © 2026",
     
     # Pencarian model di sidebar
     "search_model": ["auth.User", "prediction.CarDataset", "prediction.PredictionHistory"],

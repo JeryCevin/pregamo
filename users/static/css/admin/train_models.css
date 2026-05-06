@@ -1,0 +1,144 @@
+/* Train Models Admin Page Styles */
+
+.train-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.train-card {
+    background: white;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.train-card-header {
+    background: white;
+    color: #212529;
+    padding: 25px 30px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.train-card-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #212529;
+}
+
+.train-card-header p {
+    margin: 8px 0 0 0;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.train-card-body {
+    padding: 35px 30px;
+    background: white;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.btn-train {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: none;
+}
+
+.btn-train:hover {
+    background: #218838;
+    transform: none;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.btn-train:active {
+    transform: translateY(0);
+}
+
+.info-card {
+    background: white;
+    border-left: 3px solid #007bff;
+    border-radius: 0;
+    padding: 20px 25px;
+    border-top: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-card h3 {
+    margin: 0 0 15px 0;
+    color: #212529;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-card ol {
+    margin: 0;
+    padding-left: 20px;
+    color: #495057;
+    line-height: 1.8;
+}
+
+.info-card ol li {
+    margin-bottom: 8px;
+}
+
+.info-note {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.info-note strong {
+    color: #212529;
+    font-size: 1.2em;
+}

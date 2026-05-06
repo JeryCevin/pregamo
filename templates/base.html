@@ -19,15 +19,7 @@
 <body>
     <header class="navbar">
         <div class="container">
-            <a href="" class="logo">PreGaMo</a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="{% url 'dashboard' %}" class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}">Dashboard</a></li>
-                    <li><a href="{% url 'predict_page' %}" class="nav-link {% if request.path == '/predict/' %}active{% endif %}">Predict</a></li>
-                    <li><a href="{% url 'predict_history' %}" class="nav-link {% if request.path == '/history/' %}active{% endif %}">Riwayat Prediksi</a></li>
-                    <li><a href="{% url 'logout' %}" class="nav-link">Logout</a></li>
-                </ul>
-            </nav>
+            <a href="#dashboard-section" class="logo">PreGaMo</a>
             <div class="nav-icons">
               <div class="user-profile-group">
         
@@ -40,6 +32,11 @@
                 {{ user.email }}
             {% endif %}
         </span>
+
+        <div class="nav-action-links">
+            <a href="#dashboard-section" class="nav-link active">Home</a>
+            <a href="{% url 'logout' %}" class="nav-link logout-link">Logout</a>
+        </div>
     </div>
             </div>
         </div>
@@ -49,6 +46,9 @@
     {% endblock content %}
 
     <script>
+        const logoutHref = "{% url 'logout' %}";
+        const defaultHash = "{% if request.path == '/api/predict/' %}#predict-section{% else %}#dashboard-section{% endif %}";
+
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
@@ -58,14 +58,34 @@
                 navbar.classList.remove('scrolled');
             }
         });
-        
-        // Active nav link highlighting
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
+
+        // Active nav link highlighting untuk one-page navigation
+        const navLinks = Array.from(document.querySelectorAll('.nav-action-links .nav-link'));
+
+        function setActiveLink(targetHash) {
+            navLinks.forEach(link => {
+                const linkHash = link.getAttribute('href');
+                if (linkHash === targetHash) {
+                    link.classList.add('active');
+                } else if (linkHash !== logoutHref) {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function updateActiveFromHash() {
+            const targetHash = window.location.hash || defaultHash;
+            setActiveLink(targetHash);
+            if (!window.location.hash && defaultHash === '#predict-section') {
+                const target = document.querySelector(defaultHash);
+                if (target) {
+                    target.scrollIntoView();
+                }
             }
-        });
+        }
+
+        window.addEventListener('hashchange', updateActiveFromHash);
+        updateActiveFromHash();
     </script>
     
     {% block scripts %}{% endblock scripts %}

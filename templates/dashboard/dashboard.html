@@ -3,29 +3,285 @@
 
 {% block title %}Dashboard - PreGaMo{% endblock title %}
 
-<!-- Bagian Awal Content Dashboard Prediksi-->
-{% block content %} 
- <section class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="container">
-            <div class="hero-content">
-                <span class="hero-tag">PREDIKSI HARGA MOBIL</span>
-                <h1>Temukan Harga Akurat Mobil Impian Anda</h1>
-                <p>Manfaatkan teknologi canggih kami untuk mendapatkan estimasi harga mobil bekas yang akurat dan terpercaya dalam hitungan detik.</p>
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/predict.css' %}">
+{% endblock styles %}
 
+{% block content %}
+<section class="hero-section" id="beranda">
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="hero-content">
+            <span class="hero-tag">PREDIKSI HARGA MOBIL</span>
+            <h1>Temukan Harga Akurat Mobil Impian Anda</h1>
+            <p>Manfaatkan teknologi canggih kami untuk mendapatkan prediksi harga mobil bekas yang akurat dan terpercaya dalam hitungan detik.</p>
+        </div>
+        <div class="feature-boxes">
+            <div class="feature-box">
+                <i class="fas fa-car"></i>
+                <h3>{{ total_mobil }} Total Mobil</h3>
             </div>
-            <div class="feature-boxes">
-                <div class="feature-box">
-                    <i class="fas fa-car"></i>
-                    <h3>{{ total_mobil }} Total Mobil</h3>
-                </div>
-                <div class="feature-box">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <h3>{{ total_brand }} Total Brand</h3>
-                </div>
+            <div class="feature-box">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>{{ total_brand }} Total Brand</h3>
             </div>
         </div>
-    </section>
-{% endblock content %}
-<!-- Bagian Akhir Content Dashboard Prediksi-->
+    </div>
+</section>
 
+<section class="content-sections" id="tentang">
+    <div class="container">
+        <section class="info-section">
+            <div class="section-heading">
+                <h2>Tentang Sistem</h2>
+                <p>Sistem ini membantu memperkirakan harga mobil bekas berdasarkan brand, model, tahun, transmisi, bahan bakar, jarak tempuh, dan kapasitas mesin.</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Prediksi Otomatis</h3>
+                    <p>Data yang Anda pilih akan diproses untuk menghasilkan estimasi harga secara cepat dan konsisten.</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Input Terarah</h3>
+                    <p>Setiap langkah dibuat bertahap agar input yang masuk tetap rapi dan mudah dipahami.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+<section class="content-sections" id="faktor">
+    <div class="container">
+        <section class="factor-section">
+            <div class="section-heading">
+                <h2>Faktor Harga</h2>
+                <p>Beberapa variabel utama mempengaruhi hasil Prediksi harga mobil bekas.</p>
+            </div>
+
+            <div class="factor-grid">
+                <div class="factor-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Tahun Produksi</h3>
+                    <p>Semakin baru tahun mobil, biasanya nilai jualnya semakin tinggi.</p>
+                </div>
+                <div class="factor-card">
+                    <i class="fas fa-road"></i>
+                    <h3>Jarak Tempuh</h3>
+                    <p>Odometer yang lebih rendah umumnya menunjukkan pemakaian yang lebih ringan.</p>
+                </div>
+                <div class="factor-card">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Transmisi</h3>
+                    <p>Manual dan otomatis bisa memberi pengaruh berbeda pada permintaan pasar.</p>
+                </div>
+                <div class="factor-card">
+                    <i class="fas fa-gas-pump"></i>
+                    <h3>Bahan Bakar</h3>
+                    <p>Jenis bahan bakar juga berperan pada minat pembeli dan harga akhir mobil.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+<main class="main-content" id="prediksi"> 
+    <div class="prediction-container">
+
+        <div class="section-heading" style="margin-bottom: 3rem;">
+            <h2>Mulai Prediksi Harga</h2>
+            <p>Silakan lengkapi data kendaraan pada form di bawah ini untuk mendapatkan estimasi harga.</p>
+        </div>
+
+        <form id="prediction-form">
+            
+            <input type="hidden" name="brand" id="brand-input" required>
+            <input type="hidden" name="model" id="model-input" required>
+            <input type="hidden" name="transmission" id="transmission-input" required>
+            <input type="hidden" name="fuel" id="fuel-input" required>
+
+            <div class="form-step active" id="step-1">
+                <h2>Pilih Brand Mobil</h2>
+                <div class="brand-grid">
+                    {% for brand in brands %}
+                    <div class="brand-box" data-value="{{ brand.name }}">
+                        {% if brand.logo and brand.logo.url %}
+                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}">
+                        {% else %}
+                        <img src="{% static 'images/default.png' %}" alt="{{ brand.name }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-step" id="step-2">
+                <h2>Pilih Model <span id="selected-brand-title"></span></h2>
+                <div class="model-grid" id="model-grid">
+                    {% for brand in brands %}
+                    <div class="model-group" data-brand="{{ brand.name }}">
+                        {% for model in brand.models.all %}
+                        <div class="model-box" data-value="{{ model.name }}">
+                            <i class="fas fa-car"></i> 
+                            <span>{{ model.name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="form-navigation">
+                    <button type="button" class="nav-btn prev-btn" data-target-step="0">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step-3">
+                <div class="specs-wrapper">
+                    <div class="spec-section">
+                        <h2>Pilih Transmisi</h2>
+                        <div class="spec-grid transmission-options">
+                            <div class="spec-box" data-value="Manual" data-type="transmission">
+                                <i class="fas fa-cogs"></i>
+                                <span>Manual</span>
+                            </div>
+                            <div class="spec-box" data-value="Otomatis" data-type="transmission">
+                                <i class="fas fa-robot"></i>
+                                <span>Otomatis</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spec-section">
+                        <h2>Pilih Bahan Bakar</h2>
+                        <div class="spec-grid fuel-options">
+                            <div class="spec-box" data-value="Bensin" data-type="fuel">
+                                <i class="fas fa-gas-pump"></i>
+                                <span>Bensin</span>
+                            </div>
+                            <div class="spec-box" data-value="Diesel" data-type="fuel">
+                                <i class="fas fa-oil-can"></i>
+                                <span>Diesel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="nav-btn prev-btn" data-target-step="1">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-step" id="step-4">
+                <h2>Detail & Konfirmasi Terakhir</h2>
+                
+                <div class="final-step-container">
+                    <div class="selection-summary">
+                        <h3>Ringkasan</h3>
+                        <div class="summary-box">
+                            <img id="summary-image" src="" alt="Car Logo">
+                            <h4 id="summary-text"></h4> 
+                        </div>
+                    </div>
+
+                    <div class="details-form">
+                        <div class="details-grid">
+                            
+                            <div class="form-group full-width">
+                                <label for="year">Tahun Produksi</label>
+                                <select id="year" name="year" required>
+                                    <option value="" disabled selected>Pilih Tahun</option>
+                                    {% for tahun in tahun_pilihan %}
+                                        <option value="{{ tahun }}">{{ tahun }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mileage">Jarak Tempuh (km)</label>
+                                <input type="number" id="mileage" name="mileage" placeholder="Contoh: 50000" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cc">Kapasitas Mesin (cc)</label>
+                                <select id="cc" name="cc" required>
+                                    <option value="" disabled selected>Pilih Kapasitas Mesin</option>
+                                    {% for cc in kapasitas_mesins %}
+                                        <option value="{{ cc }}">{{ cc }} cc</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                        </div>
+                        <div class="form-navigation">
+                            <button type="button" class="nav-btn prev-btn" data-target-step="2">
+                                <i class="fas fa-arrow-left"></i> Kembali
+                            </button>
+                            <button type="submit" class="nav-btn submit-btn">
+                                Prediksi Harga <i class="fas fa-magic"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+ <div id="predictionModal" class="modal">
+    <div class="modal-content modal-content-wide">
+        <div class="modal-close-btn btn-selesai">&times;</div>
+        
+        <div class="modal-header">
+            <div class="icon-success-wrapper">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Analisis Harga Berhasil</h3>
+            <p>Estimasi nilai pasar untuk kendaraan Anda telah siap.</p>
+        </div>
+        
+        <div class="modal-body modal-body-split">
+            
+            <div class="modal-left-panel">
+                <div class="modal-car-summary">
+                    <img id="modal-summary-image" src="" alt="Car Brand">
+                    <div id="modal-summary-text"></div>
+                </div>
+                
+                <div class="conclusion-box">
+                    <div class="conclusion-header">
+                        <i class="fas fa-microchip"></i>
+                        <h4>Analisis Sistem</h4>
+                    </div>
+                    <div class="conclusion-divider"></div>
+                    <p id="conclusionText" class="conclusion-text"></p>
+                </div>
+            </div>
+
+            <div class="modal-right-panel">
+                <div class="price-display-wrapper">
+                    <span class="price-label">Estimasi Harga Wajar (Nilai Tengah)</span>
+                    <div id="predictedPrice" class="predicted-price"></div>
+                    <div id="predictedRange" class="predicted-range"></div>
+                </div>
+            </div>
+
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn-selesai-premium btn-selesai">
+                Selesai & Tutup
+            </button>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/predict.js' %}"></script>
+{% endblock scripts %}

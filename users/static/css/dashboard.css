@@ -24,12 +24,23 @@
     box-sizing: border-box;
 }
 
+/* Tambahan agar scroll mulus (One Page) */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
     color: var(--text-secondary);
     line-height: 1.6;
     min-height: 100vh;
+}
+
+html,
+body {
+    height: 100%;
+    /* scroll-snap sudah dihapus agar tidak lompat-lompat */
 }
 
 .container {
@@ -39,17 +50,25 @@ body {
 
 /* === 2. Navbar === */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     padding: 1rem 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
     transition: all 0.3s ease;
-    border-bottom: 1px solid var(--card-border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid transparent;
+    box-shadow: none;
+}
+
+.navbar.scrolled {
+    background: rgba(3, 15, 39, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .navbar .container {
@@ -61,14 +80,14 @@ body {
 .logo {
     font-size: 1.75rem;
     font-weight: 800;
-    color: var(--accent-blue);
+    color: #ffffff;
     text-decoration: none;
     letter-spacing: -0.5px;
     transition: all 0.2s ease;
 }
 
 .logo:hover {
-    color: var(--accent-blue-dark);
+    color: #e6f1ff;
 }
 
 .main-nav ul {
@@ -94,14 +113,14 @@ body {
 .nav-icons {
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
-/* Di dalam file dashboard-style.css */
 
 .nav-link {
-    color: var(--text-secondary);
+    color: #e6f1ff;
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 1rem;
     position: relative;
     padding: 0.5rem 0;
     transition: all 0.2s ease;
@@ -109,7 +128,7 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 .nav-link::after {
@@ -119,7 +138,7 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--accent-blue);
+    background: var(--light-blue-accent);
     transition: width 0.3s ease;
 }
 
@@ -131,23 +150,30 @@ body {
 .user-profile-group {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     padding: 0.5rem 1rem;
-    background: var(--primary-bg);
-    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     border-radius: 50px;
     transition: all 0.2s ease;
 }
 
+.nav-action-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 0.75rem;
+}
+
 .user-profile-group:hover {
-    background: #e0f2fe;
-    border-color: var(--accent-blue);
+    background: rgba(0, 191, 255, 0.12);
+    border-color: var(--light-blue-accent);
 }
 
 .user-profile-group .user-icon {
     width: 32px;
     height: 32px;
-    background: var(--accent-blue);
+    background: var(--light-blue-accent);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -158,27 +184,26 @@ body {
 
 .user-profile-group .user-display-name {
     margin-left: 10px;
-    color: var(--text-primary);
+    color: #ffffff;
     font-weight: 500;
 }
 
 .logout-link {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
+    color: #e6f1ff;
+    font-size: 1rem;
     transition: color 0.3s ease;
 }
 .logout-link:hover {
-    color: #ff4d4d; /* Warna merah saat hover logout */
+    color: #ff7b7b;
 }
 
 
 /* === 3. Hero Section (Bagian Utama) === */
 .hero-section {
     position: relative;
-    min-height: 90vh;
     display: flex;
     align-items: center;
-    padding: 9rem 0 4rem 0;
+    padding: 10rem 0 6rem 0; /* Jarak padding sudah dirapikan */
 }
 
 .hero-section .container {
@@ -272,18 +297,15 @@ body {
 }
 
 .feature-box {
-    /* Ini adalah efek KACA BURAM (FROSTED GLASS) */
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    
+    /* Efek KACA BURAM (FROSTED GLASS) sudah diperbaiki menjadi transparan */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);  
     border-radius: 16px;
     padding: 2.5rem 2rem;
     text-align: center;
     transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
-
 
 .feature-box i {
     font-size: 2rem;
@@ -294,7 +316,7 @@ body {
 .feature-box h3 {
     font-size: 16px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 /* === 7. Responsif (Tampilan Mobile) === */
@@ -315,7 +337,7 @@ body {
     }
     
     .main-nav {
-        display: none; /* Sembunyikan nav utama (butuh menu hamburger) */
+        display: none; 
     }
 }
 

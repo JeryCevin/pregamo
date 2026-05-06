@@ -9,9 +9,35 @@ from django.urls import path, reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import Brand, CarModel, PredictionHistory, FileDataset, TrainingHistory
+from .models import Brand, CarModel, PredictionHistory, FileDataset, CarDataset  # TrainingHistory tidak dipakai
 import pandas as pd
 import os
+
+
+# ============================================================================
+# DEPRECATED MODEL - Hide from admin
+# ============================================================================
+
+@admin.register(CarDataset)
+class CarDatasetAdmin(admin.ModelAdmin):
+    """
+    Admin untuk CarDataset (Legacy/Deprecated).
+    Model ini tidak digunakan lagi, tapi perlu di-register untuk menghindari URL reverse error.
+    """
+    def has_module_permission(self, request):
+        return False  # Hide dari admin sidebar
+    
+    def has_add_permission(self, request):
+        return False
+    
+    def has_change_permission(self, request, obj=None):
+        return False
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
+    def has_view_permission(self, request, obj=None):
+        return False
 
 
 # ============================================================================
@@ -218,14 +244,18 @@ class FileDatasetAdmin(admin.ModelAdmin):
     
     @admin.display(description='Aksi')
     def action_buttons(self, obj):
-        """Tombol aksi Export dan Delete untuk setiap row"""
+        """Tombol aksi Edit, Export dan Delete untuk setiap row"""
         return format_html(
+            '<a class="button" href="{}" style="background: #007bff; color: white; padding: 8px 12px; '
+            'border-radius: 4px; text-decoration: none; margin-right: 5px; display: inline-block;">'
+            'Edit</a>'
             '<a class="button" href="{}" style="background: #28a745; color: white; padding: 8px 12px; '
             'border-radius: 4px; text-decoration: none; margin-right: 5px; display: inline-block;">'
             'Export</a>'
             '<a class="button" href="{}" onclick="return confirm(\'Yakin ingin menghapus dataset ini?\');" '
             'style="background: #dc3545; color: white; padding: 8px 12px; border-radius: 4px; '
             'text-decoration: none; display: inline-block;">Delete</a>',
+            reverse('admin:prediction_filedataset_change', args=[obj.id]),
             reverse('admin:prediction_filedataset_export', args=[obj.id]),
             reverse('admin:prediction_filedataset_delete', args=[obj.id])
         )
@@ -319,10 +349,10 @@ class FileDatasetAdmin(admin.ModelAdmin):
 
 
 # ============================================================================
-# TRAIN MODELS - Simple Admin (No Custom HTML)
+# TRAIN MODELS 
 # ============================================================================
 
-class FileDatasetProxy(FileDataset):
+class TrainModelDataset(FileDataset):
     """Proxy model untuk Train Models view - menggunakan FileDataset sebagai base"""
     class Meta:
         proxy = True
@@ -350,14 +380,14 @@ class TrainModelForm(forms.Form):
         self.fields['brand'].choices = choices
 
 
-@admin.register(FileDatasetProxy)
+@admin.register(TrainModelDataset)
 class TrainModelsAdmin(admin.ModelAdmin):
     """
     Admin untuk Train Models - form sederhana pilih brand dan train.
     Menggunakan mekanisme bawaan Django admin.
     """
     
-    change_list_template = 'admin/prediction/train_models_changelist.html'
+    change_list_template = 'admin/Train_models.html'
     
     def has_add_permission(self, request):
         return False
@@ -384,8 +414,6 @@ class TrainModelsAdmin(admin.ModelAdmin):
                         # Training menggunakan modul training_linear
                         from .training_linear import train_from_file
                         
-                        messages.info(request, f'🔄 Training model untuk {brand.name} dimulai...')
-                        
                         result = train_from_file(dataset.id)
                         
                         if result['success']:
@@ -395,8 +423,8 @@ class TrainModelsAdmin(admin.ModelAdmin):
                                 mark_safe(
                                     f"✅ <strong>Training Berhasil!</strong><br>"
                                     f"Brand: <strong>{brand.name}</strong><br>"
-                                    f"RMSE: Rp {metrics['rmse']:,.0f}<br>"
-                                    f"R² Score: {metrics['r2_score']:.4f} (<strong>{metrics['accuracy_percentage']:.2f}%</strong>)<br>"
+                                    f"R² Score: <strong>{metrics['accuracy_percentage']:.2f}%</strong><br>"
+                                    f"RMSE: Rp {metrics['rmse']:,.0f} (<strong>{metrics['rmse_percentage']:.2f}%</strong>)<br>"
                                     f"Waktu: {result['training_time']:.2f} detik"
                                 )
                             )
@@ -408,7 +436,7 @@ class TrainModelsAdmin(admin.ModelAdmin):
                 except Exception as e:
                     messages.error(request, f'❌ Error training: {str(e)}')
                 
-                return redirect('admin:prediction_filedatasetproxy_changelist')
+                return redirect('admin:prediction_trainmodeldataset_changelist')
             else:
                 messages.error(request, '❌ Pilih brand terlebih dahulu!')
         else:
@@ -426,179 +454,4 @@ class TrainModelsAdmin(admin.ModelAdmin):
         context.update(extra_context)
         
         return super().changelist_view(request, extra_context=context)
-
-
-# ============================================================================
-# ADMIN UNTUK TRAINING HISTORY - Monitor Background Training
-# ============================================================================
-
-@admin.register(TrainingHistory)
-class TrainingHistoryAdmin(admin.ModelAdmin):
-    """
-    Admin untuk monitoring training history dan background tasks.
-    Read-only untuk menjaga integritas data.
-    """
-    
-    list_display = [
-        'id',
-        'status_badge',
-        'brand',
-        'accuracy_display',
-        'metrics_display',
-        'training_time_display',
-        'started_at',
-        'trained_by_display'
-    ]
-    
-    list_filter = [
-        'status',
-        'brand',
-        'started_at',
-        ('trained_by', admin.RelatedOnlyFieldListFilter),
-    ]
-    
-    search_fields = ['brand', 'trained_by__username', 'log_message', 'error_message']
-    
-    readonly_fields = [
-        'brand', 'status', 'total_data', 'data_cleaned', 'data_removed',
-        'rmse', 'mae', 'r2_score', 'model_path', 'training_time',
-        'log_message', 'error_message', 'started_at', 'completed_at', 'trained_by'
-    ]
-    
-    list_per_page = 50
-    date_hierarchy = 'started_at'
-    
-    # Disable add/change/delete
-    def has_add_permission(self, request):
-        return False
-    
-    def has_change_permission(self, request, obj=None):
-        return False  # Read-only
-    
-    def has_delete_permission(self, request, obj=None):
-        return True  # Allow delete untuk cleanup
-    
-    # Custom displays
-    @admin.display(description='Status', ordering='status')
-    def status_badge(self, obj):
-        """Tampilkan status dengan badge warna"""
-        badges = {
-            'pending': ('⏳', '#ffc107', 'black'),      # Yellow
-            'processing': ('🔄', '#17a2b8', 'white'),  # Blue
-            'completed': ('✅', '#28a745', 'white'),   # Green
-            'failed': ('❌', '#dc3545', 'white'),      # Red
-        }
-        
-        icon, bg_color, text_color = badges.get(obj.status, ('❓', '#6c757d', 'white'))
-        
-        return format_html(
-            '<span style="background: {}; color: {}; padding: 5px 10px; '
-            'border-radius: 4px; font-weight: bold; display: inline-block;">'
-            '{} {}</span>',
-            bg_color, text_color, icon, obj.get_status_display()
-        )
-    
-    @admin.display(description='Akurasi', ordering='r2_score')
-    def accuracy_display(self, obj):
-        """Tampilkan akurasi dengan warna berdasarkan performa"""
-        if obj.r2_score is not None:
-            percentage = obj.r2_score * 100
-            
-            # Warna berdasarkan akurasi
-            if percentage >= 90:
-                color = '#28a745'  # Green - Excellent
-            elif percentage >= 80:
-                color = '#17a2b8'  # Blue - Good
-            elif percentage >= 70:
-                color = '#ffc107'  # Yellow - Fair
-            else:
-                color = '#dc3545'  # Red - Poor
-            
-            return format_html(
-                '<strong style="color: {}; font-size: 14px;">{:.2f}%</strong>',
-                color, percentage
-            )
-        return '-'
-    
-    @admin.display(description='Metrics')
-    def metrics_display(self, obj):
-        """Tampilkan metrics ringkas"""
-        if obj.status == 'completed':
-            return format_html(
-                '<div style="font-size: 11px;">'
-                'RMSE: <strong>Rp {:,.0f}</strong><br>'
-                'MAE: <strong>Rp {:,.0f}</strong><br>'
-                'Data: <strong>{:,}</strong> rows'
-                '</div>',
-                obj.rmse or 0,
-                obj.mae or 0,
-                obj.data_cleaned or 0
-            )
-        elif obj.status == 'failed':
-            return format_html(
-                '<span style="color: #dc3545; font-size: 11px;">❌ Failed</span>'
-            )
-        else:
-            return format_html(
-                '<span style="color: #6c757d; font-size: 11px;">⏳ {}</span>',
-                obj.get_status_display()
-            )
-    
-    @admin.display(description='Waktu', ordering='training_time')
-    def training_time_display(self, obj):
-        """Tampilkan waktu training dengan format readable"""
-        if obj.training_time:
-            if obj.training_time < 60:
-                return f"{obj.training_time:.2f}s"
-            else:
-                minutes = int(obj.training_time / 60)
-                seconds = int(obj.training_time % 60)
-                return f"{minutes}m {seconds}s"
-        return '-'
-    
-    @admin.display(description='Dilatih Oleh')
-    def trained_by_display(self, obj):
-        """Tampilkan user atau autonomous"""
-        if obj.trained_by:
-            return format_html(
-                '👤 <strong>{}</strong>',
-                obj.trained_by.username
-            )
-        return format_html(
-            '<span style="color: #17a2b8;">🤖 Autonomous</span>'
-        )
-    
-    # Fieldsets untuk detail view
-    fieldsets = (
-        ('Training Info', {
-            'fields': ('brand', 'status', 'started_at', 'completed_at', 'trained_by')
-        }),
-        ('Dataset Info', {
-            'fields': ('total_data', 'data_cleaned', 'data_removed')
-        }),
-        ('Model Performance', {
-            'fields': ('rmse', 'mae', 'r2_score')
-        }),
-        ('Training Details', {
-            'fields': ('model_path', 'training_time')
-        }),
-        ('Logs', {
-            'fields': ('log_message', 'error_message'),
-            'classes': ('collapse',)
-        }),
-    )
-    
-    # Actions untuk cleanup
-    actions = ['delete_selected_trainings']
-    
-    @admin.action(description='🗑️ Delete selected training records')
-    def delete_selected_trainings(self, request, queryset):
-        """Bulk delete training history"""
-        count = queryset.count()
-        queryset.delete()
-        self.message_user(
-            request,
-            f'✅ {count} training record(s) berhasil dihapus!',
-            messages.SUCCESS
-        )
 
