@@ -16,21 +16,6 @@ class CarModel(models.Model):
     
     def __str__(self):
         return f"{self.brand.name} {self.name}"
-    
-class PredictionHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # Terhubung ke user (Jery Cevin)
-    brand = models.CharField(max_length=50)
-    model_name = models.CharField(max_length=100)
-    year = models.IntegerField()
-    mileage = models.IntegerField()
-    transmission = models.CharField(max_length=20)
-    fuel = models.CharField(max_length=20)
-    engine_cc = models.IntegerField()
-    predicted_price = models.BigIntegerField() # Harga hasil prediksi
-    created_at = models.DateTimeField(auto_now_add=True) # Waktu otomatis saat tombol diklik
-
-    def __str__(self):
-        return f"{self.user.username} - {self.brand} {self.model_name}"
 
 
 class CarDataset(models.Model):
@@ -84,7 +69,6 @@ class FileDataset(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Tanggal Upload")
     file_size = models.IntegerField(default=0, verbose_name="Ukuran File (bytes)", blank=True)
     row_count = models.IntegerField(default=0, verbose_name="Jumlah Baris Data", blank=True)
-    description = models.TextField(blank=True, verbose_name="Deskripsi/Catatan")
     
     class Meta:
         verbose_name = "Dataset File"

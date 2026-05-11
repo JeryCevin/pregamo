@@ -181,7 +181,7 @@ JAZZMIN_SETTINGS = {
     "copyright": "Pregamo © 2026",
     
     # Pencarian model di sidebar
-    "search_model": ["auth.User", "prediction.CarDataset", "prediction.PredictionHistory"],
+    "search_model": ["auth.User", "prediction.CarDataset"],
     
     # User avatar (tidak menggunakan avatar)
     "user_avatar": None,
@@ -234,7 +234,6 @@ JAZZMIN_SETTINGS = {
         # Icons untuk aplikasi Prediction
         "prediction": "fas fa-chart-line",
         "prediction.CarDataset": "fas fa-car",
-        "prediction.PredictionHistory": "fas fa-history",
         "prediction.Brand": "fas fa-tags",
         
         # Icons untuk aplikasi lain (opsional)

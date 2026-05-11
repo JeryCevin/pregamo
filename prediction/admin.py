@@ -1,7 +1,6 @@
 # prediction/admin.py
 
 from django.contrib import admin
-from django.contrib.humanize.templatetags.humanize import intcomma
 from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
@@ -9,7 +8,7 @@ from django.urls import path, reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import Brand, CarModel, PredictionHistory, FileDataset, CarDataset  # TrainingHistory tidak dipakai
+from .models import Brand, CarModel, FileDataset, CarDataset  # TrainingHistory tidak dipakai
 import pandas as pd
 import os
 
@@ -106,82 +105,6 @@ class BrandAdmin(admin.ModelAdmin):
 
 
 # ============================================================================
-# ADMIN UNTUK PREDICTION HISTORY
-# ============================================================================
-
-# Admin untuk PredictionHistory
-@admin.register(PredictionHistory)
-class PredictionHistoryAdmin(admin.ModelAdmin):
-    list_display = ['user', 'brand', 'model_name', 'year', 'display_predicted_price', 'created_at', 'action_buttons']
-    list_filter = ['brand', 'year', 'transmission', 'fuel']
-    readonly_fields = ['created_at']
-    ordering = ['-created_at']
-    list_per_page = 25
-    
-    # Disable bulk actions
-    actions = None
-    
-    def has_add_permission(self, request):
-        """Disable add button - history tidak bisa ditambah manual"""
-        return False
-    
-    # Custom display untuk format harga
-    @admin.display(description='Harga Prediksi', ordering='predicted_price')
-    def display_predicted_price(self, obj):
-        return f"Rp {intcomma(obj.predicted_price)}"
-    
-    @admin.display(description='Aksi')
-    def action_buttons(self, obj):
-        """Tombol aksi Delete untuk setiap row"""
-        return format_html(
-            '<a class="button" href="{}" onclick="return confirm(\'Yakin ingin menghapus history ini?\');" '
-            'style="background: #dc3545; color: white; padding: 8px 12px; border-radius: 4px; '
-            'text-decoration: none; display: inline-block;">Delete</a>',
-            reverse('admin:prediction_predictionhistory_delete', args=[obj.id])
-        )
-    
-    # Custom URLs untuk action buttons
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path('<int:history_id>/delete/', self.admin_site.admin_view(self.delete_single_history), name='prediction_predictionhistory_delete'),
-        ]
-        return custom_urls + urls
-    
-    def delete_single_history(self, request, history_id):
-        """Delete single prediction history dari button di row"""
-        try:
-            history = PredictionHistory.objects.get(id=history_id)
-            user_name = history.user.username if history.user else 'Unknown'
-            brand = history.brand
-            history.delete()
-            messages.success(request, f'✅ History prediksi {brand} oleh {user_name} berhasil dihapus!')
-        except PredictionHistory.DoesNotExist:
-            messages.error(request, '❌ History tidak ditemukan!')
-        except Exception as e:
-            messages.error(request, f'❌ Error delete: {str(e)}')
-        
-        return redirect('admin:prediction_predictionhistory_changelist')
-    
-    # Fieldsets untuk form yang lebih rapi
-    fieldsets = (
-        ('Informasi User', {
-            'fields': ('user',)
-        }),
-        ('Detail Mobil', {
-            'fields': ('brand', 'model_name', 'year', 'transmission', 'fuel', 'engine_cc')
-        }),
-        ('Hasil Prediksi', {
-            'fields': ('predicted_price', 'mileage')
-        }),
-        ('Waktu', {
-            'fields': ('created_at',),
-            'classes': ('collapse',)
-        }),
-    )
-
-
-# ============================================================================
 # ADMIN UNTUK FILE-BASED WORKFLOW (NEW)
 # ============================================================================
 
@@ -207,7 +130,6 @@ class FileDatasetAdmin(admin.ModelAdmin):
     
     search_fields = [
         'brand__name',
-        'description',
     ]
     
     readonly_fields = ['uploaded_at', 'file_size', 'row_count']
@@ -220,7 +142,7 @@ class FileDatasetAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Upload Dataset', {
-            'fields': ('brand', 'file_excel', 'description')
+            'fields': ('brand', 'file_excel')
         }),
         ('Informasi File', {
             'fields': ('uploaded_at', 'file_size', 'row_count'),
